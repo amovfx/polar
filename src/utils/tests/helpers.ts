@@ -130,6 +130,10 @@ export const testRepoState: DockerRepoState = {
       latest: '',
       versions: [],
     },
+    taro: {
+      latest: '',
+      versions: [],
+    },
   },
 };
 

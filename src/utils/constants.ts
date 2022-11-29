@@ -65,6 +65,10 @@ export const BasePorts: Record<NodeImplementation, Record<string, number>> = {
     p2p: 9935,
   },
   btcd: {},
+  taro: {
+    rest: 8089,
+    rpc: 10029,
+  },
 };
 
 export const bitcoinCredentials = {
@@ -207,6 +211,24 @@ export const dockerConfigs: Record<NodeImplementation, DockerConfig> = {
     command: '',
     variables: [],
   },
+  taro: {
+    name: 'Taro',
+    imageName: '',
+    logo: '',
+    platforms: ['mac', 'linux', 'windows'],
+    volumeDirName: 'taro',
+    command: [
+      'tarod',
+      '--network=regtest',
+      '--lnd.macaroonpath=/home/lnd/.lnd/data/chain/bitcoin/regtest/admin.macaroon',
+      '--lnd.tlspath=/home/lnd/.lnd/tls.cert',
+      '--tarodir=/home/taro/.taro',
+      '--rpclisten=0.0.0.0:10029',
+      '--lnd.host=alice:10009',
+      '--restlisten=0.0.0.0:8089',
+    ].join('\n  '),
+    variables: [],
+  },
 };
 
 /**
@@ -262,6 +284,10 @@ export const defaultRepoState: DockerRepoState = {
       versions: ['23.0', '22.0', '0.21.1'],
     },
     btcd: {
+      latest: '',
+      versions: [],
+    },
+    taro: {
       latest: '',
       versions: [],
     },

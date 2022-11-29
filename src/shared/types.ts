@@ -10,7 +10,7 @@ export interface CommonNode {
   id: number;
   networkId: number;
   name: string;
-  type: 'bitcoin' | 'lightning';
+  type: 'bitcoin' | 'lightning' | 'taro';
   version: string;
   status: Status;
   errorMsg?: string;
@@ -74,9 +74,24 @@ export interface BitcoinNode extends CommonNode {
   };
 }
 
+export interface TaroNode extends CommonNode {
+  type: 'taro';
+  implementation: 'taro';
+  ports: {
+    rest: number;
+    rpc: number;
+  };
+  host: string;
+  paths: {
+    tlsCert: string;
+    macaroon: string;
+  };
+}
+
 export type NodeImplementation =
   | BitcoinNode['implementation']
-  | LightningNode['implementation'];
+  | LightningNode['implementation']
+  | TaroNode['implementation'];
 
 export interface OpenChannelOptions {
   from: LightningNode;
