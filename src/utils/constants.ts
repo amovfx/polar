@@ -4,6 +4,7 @@ import bitcoindLogo from 'resources/bitcoin.svg';
 import clightningLogo from 'resources/clightning.png';
 import eclairLogo from 'resources/eclair.png';
 import lndLogo from 'resources/lnd.png';
+import taroLogo from 'resources/taro.png';
 import packageJson from '../../package.json';
 
 // App
@@ -214,7 +215,7 @@ export const dockerConfigs: Record<NodeImplementation, DockerConfig> = {
   taro: {
     name: 'Taro',
     imageName: '',
-    logo: '',
+    logo: taroLogo,
     platforms: ['mac', 'linux', 'windows'],
     volumeDirName: 'taro',
     command: [
