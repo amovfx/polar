@@ -225,10 +225,10 @@ export const dockerConfigs: Record<NodeImplementation, DockerConfig> = {
       '--lnd.tlspath=/home/lnd/.lnd/tls.cert',
       '--tarodir=/home/taro/.taro',
       '--rpclisten=0.0.0.0:10029',
-      '--lnd.host=alice:10009',
+      '--lnd.host={{l2backendName}}:10009',
       '--restlisten=0.0.0.0:8089',
     ].join('\n  '),
-    variables: [],
+    variables: ['l2backendName'],
   },
 };
 

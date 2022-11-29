@@ -315,6 +315,7 @@
   "cmps.nodeImages.CommandVariables.var-name": "The generated name of the node (ex: alice)",
   "cmps.nodeImages.CommandVariables.var-containerName": "The generated name of the docker container (ex: polar-n1-alice)",
   "cmps.nodeImages.CommandVariables.var-backendName": "The generated name of the Bitcoin node that the Lightning node uses as a backend (ex: backend1)",
+  "cmps.nodeImages.CommandVariables.var-l2backendName": "The generated name of the Lightning node that the Taro node uses as a backend (ex: alice, bob, carol)",
   "cmps.nodeImages.CommandVariables.var-rpcUser": "The RPC username used to authenticate to the backend Bitcoin node",
   "cmps.nodeImages.CommandVariables.var-rpcPass": "The RPC password used to authenticate to the backend Bitcoin node",
   "cmps.nodeImages.CommandVariables.var-rpcAuth": "The encoded RPC authentication string used to specify the password for the backend Bitcoin node",
