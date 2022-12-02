@@ -1,9 +1,11 @@
 import { IChart, IConfig, ILink, INode, IPosition } from '@mrblenny/react-flow-chart';
-import { BitcoinNode, LightningNode } from 'shared/types';
+import { BitcoinNode, LightningNode, TaroNode } from 'shared/types';
 import { LightningNodeChannel } from 'lib/lightning/types';
 import { LightningNodeMapping } from 'store/models/lightning';
+import { ChartNode } from 'shared/types';
 import { Network } from 'types';
 import { dockerConfigs } from './constants';
+import { TrademarkOutlined } from '@ant-design/icons';
 
 export interface LinkProperties {
   type: 'backend' | 'pending-channel' | 'open-channel' | 'btcpeer';
@@ -40,7 +42,33 @@ export const snap = (position: IPosition, config?: IConfig) => {
   return offset;
 };
 
-export const createLightningChartNode = (ln: LightningNode) => {
+export const createTaroChartNode = (taro: TaroNode): ChartNode => {
+  const node: INode = {
+    id: taro.name,
+    type: 'taro',
+    position: { x: taro.id * 250 + 50, y: taro.id % 2 === 0 ? 100 : 200 },
+    ports: {
+      'empty-left': { id: 'empty-left', type: 'left' },
+      'empty-right': { id: 'empty-right', type: 'right' },
+      l2backend: { id: 'l2backend', type: 'bottom' },
+    },
+    properties: {
+      icon: dockerConfigs[taro.implementation].logo,
+      status: taro.status,
+    },
+  };
+  const link: ILink = {
+    id: `${taro.name}-${taro.l2backendName}`,
+    from: { nodeId: taro.name, portId: 'l2backend' },
+    to: { nodeId: taro.l2backendName, portId: 'l2backend' },
+    properties: {
+      type: 'backend',
+    },
+  };
+  return { node, link };
+};
+
+export const createLightningChartNode = (ln: LightningNode): ChartNode => {
   const node: INode = {
     id: ln.name,
     type: 'lightning',
@@ -49,6 +77,7 @@ export const createLightningChartNode = (ln: LightningNode) => {
       'empty-left': { id: 'empty-left', type: 'left' },
       'empty-right': { id: 'empty-right', type: 'right' },
       backend: { id: 'backend', type: 'bottom' },
+      l2backend: { id: 'l2backend', type: 'top' },
     },
     size: { width: 200, height: 36 },
     properties: {
@@ -69,7 +98,7 @@ export const createLightningChartNode = (ln: LightningNode) => {
   return { node, link };
 };
 
-export const createBitcoinChartNode = (btc: BitcoinNode) => {
+export const createBitcoinChartNode = (btc: BitcoinNode): ChartNode => {
   const node: INode = {
     id: btc.name,
     type: 'bitcoin',
@@ -124,7 +153,9 @@ export const initChartFromNetwork = (network: Network): IChart => {
   network.nodes.lightning.forEach(n => {
     const { node, link } = createLightningChartNode(n);
     chart.nodes[node.id] = node;
-    chart.links[link.id] = link;
+    if (link) {
+      chart.links[link.id] = link;
+    }
   });
 
   return chart;

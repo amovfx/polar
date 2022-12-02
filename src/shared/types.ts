@@ -1,3 +1,5 @@
+import { ILink, INode } from '@mrblenny/react-flow-chart';
+
 export enum Status {
   Starting,
   Started,
@@ -77,6 +79,7 @@ export interface BitcoinNode extends CommonNode {
 export interface TaroNode extends CommonNode {
   type: 'taro';
   implementation: 'taro';
+  l2backendName: string;
   ports: {
     rest: number;
     rpc: number;
@@ -98,4 +101,9 @@ export interface OpenChannelOptions {
   toRpcUrl: string;
   amount: string;
   isPrivate: boolean;
+}
+
+export interface ChartNode {
+  node: INode;
+  link: ILink | undefined;
 }

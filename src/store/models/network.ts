@@ -7,6 +7,7 @@ import {
   BitcoinNode,
   CommonNode,
   LightningNode,
+  TaroNode,
   NodeImplementation,
   Status,
 } from 'shared/types';
@@ -20,6 +21,7 @@ import {
   createCLightningNetworkNode,
   createEclairNetworkNode,
   createLndNetworkNode,
+  createTaroNetworkNode,
   createNetwork,
   filterCompatibleBackends,
   getMissingImages,
@@ -69,7 +71,7 @@ export interface NetworkModel {
     },
     StoreInjections,
     RootModel,
-    Promise<LightningNode | BitcoinNode>
+    Promise<LightningNode | BitcoinNode | TaroNode>
   >;
   updateAdvancedOptions: Thunk<
     NetworkModel,
@@ -167,7 +169,11 @@ const networkModel: NetworkModel = {
   }),
   updateNodeCommand: action((state, { id, name, command }) => {
     const network = state.networks.find(n => n.id === id) as Network;
-    const nodes: CommonNode[] = [...network.nodes.lightning, ...network.nodes.bitcoin];
+    const nodes: CommonNode[] = [
+      ...network.nodes.lightning,
+      ...network.nodes.bitcoin,
+      ...network.nodes.taro,
+    ];
     nodes.filter(n => n.name === name).forEach(n => (n.docker.command = command));
   }),
   updateNodePorts: action((state, { id, ports }) => {
@@ -247,7 +253,7 @@ const networkModel: NetworkModel = {
       const networks = getState().networks;
       const network = networks.find(n => n.id === id);
       if (!network) throw new Error(l('networkByIdErr', { networkId: id }));
-      let node: LightningNode | BitcoinNode;
+      let node: LightningNode | BitcoinNode | TaroNode;
       // lookup custom image and startup command
       const docker = { image: '', command: '' };
       if (customId) {
@@ -293,6 +299,15 @@ const networkModel: NetworkModel = {
         case 'bitcoind':
           node = createBitcoindNetworkNode(network, version, docker);
           network.nodes.bitcoin.push(node);
+          break;
+        case 'taro':
+          node = createTaroNetworkNode(
+            network,
+            version,
+            dockerRepoState.images.taro.compatibility,
+            docker,
+          );
+          network.nodes.taro.push(node);
           break;
         default:
           throw new Error(`Cannot add unknown node type '${type}' to the network`);

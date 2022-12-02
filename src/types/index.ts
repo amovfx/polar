@@ -4,6 +4,7 @@ import {
   BitcoinNode,
   CommonNode,
   LightningNode,
+  TaroNode,
   NodeImplementation,
   OpenChannelOptions,
   Status,
@@ -20,6 +21,7 @@ export interface Network {
   nodes: {
     bitcoin: BitcoinNode[];
     lightning: LightningNode[];
+    taro: TaroNode[];
   };
 }
 

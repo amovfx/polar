@@ -12,6 +12,7 @@ import {
   EclairNode,
   LightningNode,
   LndNode,
+  TaroNode,
   NodeImplementation,
   Status,
 } from 'shared/types';
@@ -121,6 +122,43 @@ export const filterCompatibleBackends = (
     );
   }
   return compatibleBackends;
+};
+
+export const createTaroNetworkNode = (
+  network: Network,
+  version: string,
+  compatibility: DockerRepoImage['compatibility'],
+  docker: CommonNode['docker'],
+  status = Status.Stopped,
+): TaroNode => {
+  const { bitcoin, lightning, taro } = network.nodes;
+  const { bitcoind, lnd, clightning, eclair } = groupNodes(network);
+  const implementation: TaroNode['implementation'] = 'taro';
+  const compatibleBackends = lnd; //filter for latest version
+  const backend = lnd[0];
+
+  const id = taro?.length ? Math.max(...taro.map(n => n.id)) + 1 : 0;
+  const name = getName(id);
+  return {
+    id,
+    networkId: network.id,
+    name,
+    type: 'taro',
+    implementation,
+    version,
+    status,
+    l2backendName: compatibleBackends[id % compatibleBackends.length].name,
+    docker,
+    ports: {
+      rest: BasePorts.taro.rest + id,
+      rpc: BasePorts.taro.rpc + id,
+    },
+    paths: {
+      tlsCert: '',
+      macaroon: '',
+    },
+    host: '',
+  };
 };
 
 export const createLndNetworkNode = (
@@ -306,10 +344,11 @@ export const createNetwork = (config: {
     nodes: {
       bitcoin: [],
       lightning: [],
+      taro: [],
     },
   };
 
-  const { bitcoin, lightning } = network.nodes;
+  const { bitcoin, lightning, taro } = network.nodes;
   const dockerWrap = (command: string) => ({ image: '', command });
 
   // add custom bitcoin nodes
@@ -320,6 +359,16 @@ export const createNetwork = (config: {
       const docker = { image: i.image.dockerImage, command: i.image.command };
       range(i.count).forEach(() => {
         bitcoin.push(createBitcoindNetworkNode(network, version, docker, status));
+      });
+    });
+
+  customImages
+    .filter(i => i.image.implementation === 'taro')
+    .forEach(i => {
+      const version = repoState.images.taro.latest;
+      const docker = { image: i.image.dockerImage, command: i.image.command };
+      range(i.count).forEach(() => {
+        taro.push(createTaroNetworkNode(network, version, undefined, docker, status));
       });
     });
 
