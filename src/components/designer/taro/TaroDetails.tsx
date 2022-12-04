@@ -1,0 +1,75 @@
+import React, { ReactNode, useState } from 'react';
+import { useAsync } from 'react-async-hook';
+import { LoadingOutlined } from '@ant-design/icons';
+import { Alert } from 'antd';
+import { usePrefixedTranslation } from 'hooks';
+import { TaroNode, Status } from 'shared/types';
+import { useStoreActions, useStoreState } from 'store';
+import { abbreviate } from 'utils/numbers';
+import { Loader } from 'components/common';
+import SidebarCard from '../SidebarCard';
+//import ActionsTab from './ActionsTab';
+//import ConnectTab from './ConnectTab';
+import InfoTab from './InfoTab';
+
+interface Props {
+  node: TaroNode;
+}
+
+const TaroDetails: React.FC<Props> = ({ node }) => {
+  const { l } = usePrefixedTranslation('cmps.designer.taro.TaroDetails');
+  const [activeTab, setActiveTab] = useState('info');
+  // const { getInfo, getWalletBalance, getChannels } = useStoreActions(s => s.taro);
+  // const getInfoAsync = useAsync(
+  //     async (node: TaroNode) => {
+  //         if (node.status !== Status.Started) return;
+  //         await getInfo(node);
+  //         //await getWalletBalance(node);
+  //         //wait getChannels(node);
+  //     },
+  //     [node],
+  // );
+
+  let extra: ReactNode | undefined;
+  const { nodes } = useStoreState(s => s.taro);
+  const nodeState = nodes[node.name];
+  // if (node.status === Status.Started && nodeState) {
+  //     if (nodeState.walletBalance) {
+  //         const { confirmed } = nodeState.walletBalance;
+  //         extra = <strong>{abbreviate(confirmed)} sats</strong>;
+  //     }
+  // }
+
+  const tabHeaders = [
+    { key: 'info', tab: l('info') },
+    //{ key: 'connect', tab: l('connect') },
+    //{ key: 'actions', tab: l('actions') },
+  ];
+  const tabContents: Record<string, ReactNode> = {
+    info: <InfoTab node={node} />,
+    //connect: <ConnectTab node={node} />,
+    //actions: <ActionsTab node={node} />,
+  };
+  return (
+    <SidebarCard
+      title={node.name}
+      extra={extra}
+      tabList={tabHeaders}
+      activeTabKey={activeTab}
+      onTabChange={setActiveTab}
+    >
+      {/* {getInfoAsync.loading && <Loader />}
+            {getInfoAsync.error && (
+                <Alert
+                    type="error"
+                    message={l('nodeInfoError')}
+                    description={getInfoAsync.error.message}
+                    showIcon
+                />
+            )} */}
+      {tabContents[activeTab]}
+    </SidebarCard>
+  );
+};
+
+export default TaroDetails;

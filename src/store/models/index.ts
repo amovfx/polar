@@ -6,6 +6,7 @@ import appModel, { AppModel } from './app';
 import bitcoindModel, { BitcoindModel } from './bitcoind';
 import designerModel, { DesignerModel } from './designer';
 import lightningModel, { LightningModel } from './lightning';
+import taroModel, { TaroModel } from './taro';
 import modalsModel, { ModalsModel } from './modals';
 import networkModel, { NetworkModel } from './network';
 
@@ -15,6 +16,7 @@ export interface RootModel {
   network: NetworkModel;
   bitcoind: BitcoindModel;
   lightning: LightningModel;
+  taro: TaroModel;
   designer: DesignerModel;
   modals: ModalsModel;
 }
@@ -26,6 +28,7 @@ export const createModel = (history: History<any>): RootModel => {
     network: networkModel,
     bitcoind: bitcoindModel,
     lightning: lightningModel,
+    taro: taroModel,
     designer: designerModel,
     modals: modalsModel,
   };

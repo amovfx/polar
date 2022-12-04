@@ -11,11 +11,12 @@ import {
   ThunkOn,
   thunkOn,
 } from 'easy-peasy';
-import { BitcoinNode, LightningNode, Status } from 'shared/types';
+import { BitcoinNode, LightningNode, TaroNode, ChartNode, Status } from 'shared/types';
 import { Network, StoreInjections } from 'types';
 import {
   createBitcoinChartNode,
   createLightningChartNode,
+  createTaroChartNode,
   rotate,
   snap,
   updateChartFromNodes,
@@ -44,7 +45,7 @@ export interface DesignerModel {
   removeNode: Action<DesignerModel, string>;
   addNode: Action<
     DesignerModel,
-    { newNode: LightningNode | BitcoinNode; position: IPosition }
+    { newNode: LightningNode | BitcoinNode | TaroNode; position: IPosition }
   >;
   onLinkCompleteListener: ThunkOn<DesignerModel, StoreInjections, RootModel>;
   onCanvasDropListener: ThunkOn<DesignerModel, StoreInjections, RootModel>;
@@ -192,13 +193,26 @@ const designerModel: DesignerModel = {
   }),
   addNode: action((state, { newNode, position }) => {
     const chart = state.allCharts[state.activeId];
-    const { node, link } =
-      newNode.type === 'lightning'
-        ? createLightningChartNode(newNode)
-        : createBitcoinChartNode(newNode);
-    node.position = position;
-    chart.nodes[node.id] = node;
-    if (link) chart.links[link.id] = link;
+    const assignData = (nodeData: ChartNode) => {
+      const node = nodeData.node;
+      const link = nodeData.link;
+      if (node !== undefined) {
+        node.position = position;
+        chart.nodes[node.id] = node;
+      }
+      if (link) chart.links[link.id] = link;
+    };
+    let nodeData: ChartNode;
+    if (newNode.type === 'lightning') {
+      nodeData = createLightningChartNode(newNode);
+      assignData(nodeData);
+    } else if (newNode.type === 'bitcoin') {
+      nodeData = createBitcoinChartNode(newNode);
+      assignData(nodeData);
+    } else if (newNode.type === 'taro') {
+      nodeData = createTaroChartNode(newNode);
+      assignData(nodeData);
+    }
   }),
   onLinkCompleteListener: thunkOn(
     actions => actions.onLinkComplete,
