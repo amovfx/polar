@@ -62,7 +62,7 @@ export const createTaroChartNode = (taro: TaroNode): ChartNode => {
     from: { nodeId: taro.name, portId: 'l2backend' },
     to: { nodeId: taro.l2backendName, portId: 'l2backend' },
     properties: {
-      type: 'backend',
+      type: 'l2backend',
     },
   };
   return { node, link };
