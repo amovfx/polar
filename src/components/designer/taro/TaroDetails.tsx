@@ -9,7 +9,7 @@ import { abbreviate } from 'utils/numbers';
 import { Loader } from 'components/common';
 import SidebarCard from '../SidebarCard';
 //import ActionsTab from './ActionsTab';
-//import ConnectTab from './ConnectTab';
+import ConnectTab from './ConnectTab';
 import InfoTab from './InfoTab';
 
 interface Props {
@@ -47,7 +47,7 @@ const TaroDetails: React.FC<Props> = ({ node }) => {
   ];
   const tabContents: Record<string, ReactNode> = {
     info: <InfoTab node={node} />,
-    //connect: <ConnectTab node={node} />,
+    connect: <ConnectTab node={node} />,
     //actions: <ActionsTab node={node} />,
   };
   return (
