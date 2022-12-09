@@ -254,6 +254,11 @@ const designerModel: DesignerModel = {
       } else if (fromNode.type === 'bitcoin' && toNode.type === 'bitcoin') {
         // connecting bitcoin to bitcoin isn't supported
         return showError(l('linkErrBitcoin'));
+      } else if (fromNode.type === 'taro' && toNode.type === 'lightning') {
+        //set paths to lnd
+        fromNode.properties.lnd.tlsCert = toNode.properties.lndPath;
+        fromNode.properties.lnd.adminMacaroon = toNode.properties.tlsCert;
+        fromNode.properties.lnd.host = `${toNode.properties.backendName}:${toNode.properties.ports.grpc}`;
       } else {
         // connecting an LN node to a bitcoin node
         if (fromPortId !== 'backend' || toPortId !== 'backend') {

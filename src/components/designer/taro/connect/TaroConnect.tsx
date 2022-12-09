@@ -18,16 +18,15 @@ const TaroConnect: React.FC<Props> = ({ node }) => {
   const { notify } = useStoreActions(s => s.app);
   const [urls, setUrls] = useState<Record<string, string>>({});
   useAsync(async () => {
-    const { tlsCert, macaroon } = node.paths;
+    const { host, tlsCert, adminMacaroon } = node.lnd;
     try {
-      const host = `127.0.0.1:${node.ports.rpc}`;
-      const resthost = `127.0.0.1:${node.ports.rest}`;
       //lnd host data
       const cert = await read(tlsCert);
-      const adminMac = await read(macaroon, 'hex');
+      const adminMac = await read(adminMacaroon, 'hex');
 
       const values: Record<string, string> = {};
-      values[l('rpcUrl')] = encode({});
+      values[l('restUrl')] = encode({ host: host, cert, macaroon: adminMac });
+      values[l('grpcUrl')] = encode({ host: host, cert, macaroon: adminMac });
 
       setUrls(values);
     } catch (error: any) {

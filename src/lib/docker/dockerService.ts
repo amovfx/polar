@@ -13,6 +13,7 @@ import {
   EclairNode,
   LightningNode,
   LndNode,
+  TaroNode,
 } from 'shared/types';
 import stripAnsi from 'strip-ansi';
 import { DockerLibrary, DockerVersions, Network, NetworksFile } from 'types';
@@ -82,7 +83,7 @@ class DockerService implements DockerLibrary {
    */
   async saveComposeFile(network: Network) {
     const file = new ComposeFile();
-    const { bitcoin, lightning } = network.nodes;
+    const { bitcoin, lightning, taro } = network.nodes;
 
     bitcoin.forEach(node => file.addBitcoind(node));
     lightning.forEach(node => {
@@ -100,6 +101,13 @@ class DockerService implements DockerLibrary {
         const eclair = node as EclairNode;
         const backend = bitcoin.find(n => n.name === eclair.backendName) || bitcoin[0];
         file.addEclair(eclair, backend);
+      }
+    });
+    taro.forEach(node => {
+      const taro = node as TaroNode;
+      const lnd = lightning.find(n => n.implementation === 'LND');
+      if (lnd) {
+        file.addTaro(node, lnd as LndNode);
       }
     });
 

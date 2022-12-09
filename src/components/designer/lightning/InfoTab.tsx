@@ -15,7 +15,7 @@ interface Props {
 }
 
 const InfoTab: React.FC<Props> = ({ node }) => {
-  const { l } = usePrefixedTranslation('a');
+  const { l } = usePrefixedTranslation('cmps.designer.lightning.InfoTab');
   const { nodes } = useStoreState(s => s.lightning);
   const details: DetailValues = [
     { label: l('nodeType'), value: node.type },

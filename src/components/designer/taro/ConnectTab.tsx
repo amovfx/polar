@@ -9,7 +9,7 @@ import { eclairCredentials } from 'utils/constants';
 import { ellipseInner } from 'utils/strings';
 import CopyIcon from 'components/common/CopyIcon';
 import DetailsList, { DetailValues } from 'components/common/DetailsList';
-//import { BasicAuth, EncodedStrings, FilePaths, LndConnect } from './connect';
+import { TaroConnect, FilePaths, EncodedStrings } from './connect';
 
 const Styled = {
   RadioGroup: styled(Radio.Group)`
@@ -33,6 +33,7 @@ const Styled = {
 
 export interface ConnectionInfo {
   restUrl: string;
+  restDocsUrl: string;
   grpcUrl?: string;
   grpcDocsUrl?: string;
   credentials: {
@@ -50,7 +51,11 @@ interface Props {
 }
 
 const ConnectTab: React.FC<Props> = ({ node }) => {
-  const { l } = usePrefixedTranslation('cmps.designer.taro.TaroDetails.connect');
+  const { l } = usePrefixedTranslation('cmps.designer.taro.ConnectTab');
+  const [authType, setAuthType] = useState<string>(
+    node.implementation === 'taro' ? 'basic' : 'paths',
+  );
+  const { openInBrowser } = useStoreActions(s => s.app);
   const nodeState = useStoreState(s => s.taro.nodes[node.name]);
 
   const info = useMemo((): ConnectionInfo => {
@@ -58,6 +63,7 @@ const ConnectTab: React.FC<Props> = ({ node }) => {
       const taronode = node as TaroNode;
       return {
         restUrl: `https://127.0.0.1:${taronode.ports.rest}`,
+        restDocsUrl: 'https://lightning.engineering/taroapi/#taro-rest-api-reference',
         grpcUrl: `https://127.0.0.1:${taronode.ports.rpc}`,
         grpcDocsUrl: 'https://lightning.engineering/taroapi/#taro-grpc-api-reference',
         credentials: {
@@ -65,8 +71,8 @@ const ConnectTab: React.FC<Props> = ({ node }) => {
           cert: taronode.paths.tlsCert,
         },
         lnd: {
-          adminMacaroon: '',
-          tlsCert: '',
+          adminMacaroon: taronode.lnd.adminMacaroon,
+          tlsCert: taronode.lnd.adminMacaroon,
         },
       };
     }
@@ -79,7 +85,7 @@ const ConnectTab: React.FC<Props> = ({ node }) => {
     } as ConnectionInfo;
   }, [node]);
 
-  const { restUrl, grpcUrl } = info;
+  const { restUrl, grpcUrl, credentials } = info;
   const hosts: DetailValues = [
     [l('grpcHost'), grpcUrl, grpcUrl],
     [l('restHost'), restUrl, restUrl],
@@ -89,9 +95,58 @@ const ConnectTab: React.FC<Props> = ({ node }) => {
       label,
       value: <CopyIcon label={label} value={value as string} text={text} />,
     }));
+  hosts.push({
+    label: l('apiDocs'),
+    value: (
+      <>
+        {info.grpcDocsUrl && (
+          <Tooltip title={info.grpcDocsUrl}>
+            <Styled.Link onClick={() => openInBrowser(info.grpcDocsUrl as string)}>
+              GRPC
+            </Styled.Link>
+          </Tooltip>
+        )}
+        <Tooltip title={info.restDocsUrl}>
+          <Styled.Link onClick={() => openInBrowser(info.restDocsUrl)}>REST</Styled.Link>
+        </Tooltip>
+        <Styled.BookIcon />
+      </>
+    ),
+  });
+
+  // ensure an appropriate auth type is used when switching nodes
+
+  const authCmps: Record<string, ReactNode> = {
+    paths: <FilePaths credentials={credentials} />,
+    hex: <EncodedStrings credentials={credentials} encoding="hex" />,
+    base64: <EncodedStrings credentials={credentials} encoding="base64" />,
+    lndc: node.implementation === 'taro' && <TaroConnect node={node as TaroNode} />,
+  };
+
+  if (node.status !== Status.Started) {
+    return <>{l('notStarted')}</>;
+  }
   return (
     <>
       <DetailsList details={hosts} />
+      <Styled.RadioGroup
+        name="authType"
+        value={'paths'}
+        size="small"
+        onChange={e => setAuthType(e.target.value)}
+      >
+        {credentials.admin && [
+          <Radio.Button key="paths" value="paths">
+            {l('filePaths')}
+          </Radio.Button>,
+          <Radio.Button key="hex" value="hex">
+            {l('hexStrings')}
+          </Radio.Button>,
+          <Radio.Button key="base64" value="base64">
+            {l('base64Strings')}
+          </Radio.Button>,
+        ]}
+      </Styled.RadioGroup>
     </>
   );
 };

@@ -43,6 +43,13 @@ const NetworkCard: React.FC<{ network: Network }> = ({ network }) => {
             suffix={<LinkOutlined />}
           />
         </Col>
+        <Col span={12}>
+          <Statistic
+            title={l('taroNodes')}
+            value={network.nodes.taro.length}
+            suffix={<LinkOutlined />}
+          />
+        </Col>
       </Row>
     </Styled.Card>
   );

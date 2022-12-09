@@ -84,10 +84,14 @@ export interface TaroNode extends CommonNode {
     rest: number;
     rpc: number;
   };
-  host: string;
   paths: {
     tlsCert: string;
     macaroon: string;
+  };
+  lnd: {
+    host: string;
+    tlsCert: string;
+    adminMacaroon: string;
   };
 }
 

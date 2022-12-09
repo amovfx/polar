@@ -42,7 +42,7 @@ const TaroDetails: React.FC<Props> = ({ node }) => {
 
   const tabHeaders = [
     { key: 'info', tab: l('info') },
-    //{ key: 'connect', tab: l('connect') },
+    { key: 'connect', tab: l('connect') },
     //{ key: 'actions', tab: l('actions') },
   ];
   const tabContents: Record<string, ReactNode> = {

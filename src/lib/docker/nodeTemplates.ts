@@ -40,6 +40,33 @@ export const bitcoind = (
   ],
 });
 
+export const taro = (
+  name: string,
+  container: string,
+  image: string,
+  restPort: number,
+  grpcPort: number,
+  command: string,
+): ComposeService => ({
+  image,
+  container_name: container,
+  environment: {
+    USERID: '${USERID:-1000}',
+    GROUPID: '${GROUPID:-1000}',
+  },
+  hostname: name,
+  command: trimInside(command),
+  volumes: [`./volumes/${dockerConfigs.taro.volumeDirName}/${name}:/home/taro/.taro`],
+  expose: [
+    '8080', // REST
+    '10009', // gRPC
+  ],
+  ports: [
+    `${restPort}:8080`, // REST
+    `${grpcPort}:10009`, // gRPC
+  ],
+});
+
 export const lnd = (
   name: string,
   container: string,
@@ -58,7 +85,10 @@ export const lnd = (
   hostname: name,
   command: trimInside(command),
   restart: 'always',
-  volumes: [`./volumes/${dockerConfigs.LND.volumeDirName}/${name}:/home/lnd/.lnd`],
+  volumes: [
+    `./volumes/${dockerConfigs.LND.volumeDirName}/${name}:/home/lnd/.lnd`,
+    `./volumes/${dockerConfigs.taro.volumeDirName}/${name}:/home/taro/.taro`,
+  ],
   expose: [
     '8080', // REST
     '10009', // gRPC

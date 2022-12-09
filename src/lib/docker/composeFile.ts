@@ -4,10 +4,11 @@ import {
   CommonNode,
   EclairNode,
   LndNode,
+  TaroNode,
 } from 'shared/types';
 import { bitcoinCredentials, dockerConfigs, eclairCredentials } from 'utils/constants';
 import { getContainerName } from 'utils/network';
-import { bitcoind, clightning, eclair, lnd } from './nodeTemplates';
+import { bitcoind, clightning, eclair, lnd, taro } from './nodeTemplates';
 
 export interface ComposeService {
   image: string;
@@ -142,6 +143,21 @@ class ComposeFile {
     this.content.services[name] = eclair(name, container, image, rest, p2p, command);
   }
 
+  addTaro(node: TaroNode, backend: LndNode) {
+    const { name, version, ports } = node;
+    const { rest, rpc } = ports;
+    const container = getContainerName(node);
+    // define the variable substitutions
+    const variables = {
+      name: node.name,
+      l2backendName: getContainerName(backend),
+    };
+    // use the node's custom image or the default for the implementation
+    const image = node.docker.image;
+    const nodeCommand = node.docker.command;
+    const command = this.mergeCommand(nodeCommand, variables);
+    this.content.services[name] = taro(name, container, image, rest, rpc, command);
+  }
   private mergeCommand(command: string, variables: Record<string, string>) {
     let merged = command;
     Object.keys(variables).forEach(key => {

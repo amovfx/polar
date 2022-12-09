@@ -39,7 +39,7 @@ export const getContainerName = (node: CommonNode) =>
   `polar-n${node.networkId}-${node.name}`;
 
 const groupNodes = (network: Network) => {
-  const { bitcoin, lightning } = network.nodes;
+  const { bitcoin, lightning, taro } = network.nodes;
   return {
     bitcoind: bitcoin.filter(n => n.implementation === 'bitcoind') as BitcoinNode[],
     lnd: lightning.filter(n => n.implementation === 'LND') as LndNode[],
@@ -47,6 +47,7 @@ const groupNodes = (network: Network) => {
       n => n.implementation === 'c-lightning',
     ) as CLightningNode[],
     eclair: lightning.filter(n => n.implementation === 'eclair') as EclairNode[],
+    taro: taro as TaroNode[],
   };
 };
 
@@ -83,6 +84,18 @@ export const getLndFilePaths = (name: string, network: Network) => {
     adminMacaroon: lndMacaroonPath(name, 'admin'),
     invoiceMacaroon: lndMacaroonPath(name, 'invoice'),
     readonlyMacaroon: lndMacaroonPath(name, 'readonly'),
+  };
+};
+
+export const getTaroFilePaths = (name: string, network: Network) => {
+  const taroDataPath = (name: string) => nodePath(network, 'taro', name);
+  const taroCertPath = (name: string) => join(taroDataPath(name), 'tls.cert');
+  const macaroonPath = join('data', 'chain', 'bitcoin', 'regtest');
+  const taroMacaroonPath = (name: string) =>
+    join(taroDataPath(name), macaroonPath, 'admin.macaroon');
+  return {
+    tlsCert: taroCertPath(name),
+    macaroon: taroMacaroonPath(name),
   };
 };
 
@@ -133,12 +146,14 @@ export const createTaroNetworkNode = (
 ): TaroNode => {
   const { bitcoin, lightning, taro } = network.nodes;
   const { bitcoind, lnd, clightning, eclair } = groupNodes(network);
+  //add error message if there are no lnd
   const implementation: TaroNode['implementation'] = 'taro';
   const compatibleBackends = lnd; //filter for latest version
-  const backend = lnd[0];
+
+  const backend = compatibleBackends[0];
 
   const id = taro?.length ? Math.max(...taro.map(n => n.id)) + 1 : 0;
-  const name = getName(id);
+  const name = `taro-${getName(id)}`;
   return {
     id,
     networkId: network.id,
@@ -153,11 +168,12 @@ export const createTaroNetworkNode = (
       rest: BasePorts.taro.rest + id,
       rpc: BasePorts.taro.rpc + id,
     },
-    paths: {
-      tlsCert: '',
-      macaroon: '',
+    paths: getTaroFilePaths(name, network),
+    lnd: {
+      host: backend.name,
+      tlsCert: backend.paths.tlsCert,
+      adminMacaroon: backend.paths.adminMacaroon,
     },
-    host: '',
   };
 };
 

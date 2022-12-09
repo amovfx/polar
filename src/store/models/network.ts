@@ -544,6 +544,7 @@ const networkModel: NetworkModel = {
         await actions.monitorStartup([
           ...network.nodes.lightning,
           ...network.nodes.bitcoin,
+          ...network.nodes.taro,
         ]);
       } catch (e: any) {
         actions.setStatus({ id, status: Status.Error });
@@ -664,6 +665,7 @@ const networkModel: NetworkModel = {
           .then(async () => await getStoreActions().lightning.connectAllPeers(network))
           .catch(e => info('Failed to connect all LN peers', e));
       }
+      //add taro to startup it needs getinfo to be called first
     },
   ),
   rename: thunk(async (actions, { id, name }, { getState }) => {
