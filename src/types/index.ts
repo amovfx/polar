@@ -12,6 +12,7 @@ import {
 import { IpcSender } from 'lib/ipc/ipcService';
 import * as PLN from 'lib/lightning/types';
 import { PolarPlatform } from 'utils/system';
+import * as PT from 'lib/taro/types';
 
 export interface Network {
   id: number;
@@ -158,6 +159,10 @@ export interface LightningFactoryInjection {
   getService: (node: LightningNode) => LightningService;
 }
 
+export interface TaroService {
+  getInfo: (node: TaroNode) => Promise<PT.TaroNodeInfo>;
+}
+
 export interface StoreInjections {
   ipc: IpcSender;
   settingsService: SettingsInjection;
@@ -165,6 +170,7 @@ export interface StoreInjections {
   repoService: RepoServiceInjection;
   bitcoindService: BitcoindLibrary;
   lightningFactory: LightningFactoryInjection;
+  taroService: TaroService;
 }
 
 export interface NetworksFile {
