@@ -57,13 +57,6 @@ interface MintAssetModel {
   nodeName?: string;
 }
 
-interface SendAssetModel {
-  visible: boolean;
-  balanceIndex?: number;
-  to?: string;
-  amount?: number;
-}
-
 interface NewAddressModel {
   visible: boolean;
   nodeName?: string;
@@ -110,8 +103,6 @@ export interface ModalsModel {
   setMintAsset: Action<ModalsModel, Partial<MintAssetModel>>;
   showMintAsset: Thunk<ModalsModel, Partial<MintAssetModel>, StoreInjections>;
   hideMintAsset: Thunk<ModalsModel>;
-  sendAsset: SendAssetModel;
-  setSendAsset: Action<ModalsModel, SendAssetModel>;
   hideSendAsset: Thunk<ModalsModel>;
   showSendAsset: Thunk<ModalsModel>;
   showNewAddress: Thunk<ModalsModel, Partial<NewAddressModel>>;
@@ -122,7 +113,6 @@ export interface ModalsModel {
 const modalsModel: ModalsModel = {
   openChannel: { visible: false },
   mintAsset: { visible: false },
-  sendAsset: { visible: false },
   newAddress: { visible: false },
   changeBackend: { visible: false },
   createInvoice: { visible: false },
@@ -137,6 +127,19 @@ const modalsModel: ModalsModel = {
       ...payload,
     };
   }),
+  showMintAsset: thunk((actions, { nodeName }) => {
+    actions.setMintAsset({ visible: true, nodeName });
+  }),
+  hideMintAsset: thunk((actions, payload, { getStoreActions, getState }) => {
+    actions.setMintAsset({ visible: false });
+  }),
+  setMintAsset: action((state, payload) => {
+    state.mintAsset = {
+      ...state.mintAsset,
+      ...payload,
+    };
+  }),
+
   showOpenChannel: thunk((actions, { to, from, linkId }) => {
     actions.setOpenChannel({ visible: true, to, from, linkId });
   }),
