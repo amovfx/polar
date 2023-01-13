@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { INode } from '@mrblenny/react-flow-chart';
 import { Dropdown, MenuProps } from 'antd';
-import { BitcoinNode, LightningNode, Status } from 'shared/types';
+import { BitcoinNode, LightningNode, Status, TaroNode } from 'shared/types';
 import { useStoreState } from 'store';
 import { AdvancedOptionsButton, RemoveNode, RestartNode } from 'components/common';
 import { ViewLogsButton } from 'components/dockerLogs';
@@ -39,7 +39,6 @@ const NodeContextMenu: React.FC<Props> = ({ node: { id }, children }) => {
 
 
   const isTaro = node.type === 'taro';
-
   const isLN = node.type === 'lightning';
   const isBackend = node.type === 'bitcoin';
   const isStarted = node.status === Status.Started;
@@ -54,11 +53,6 @@ const NodeContextMenu: React.FC<Props> = ({ node: { id }, children }) => {
     addItemIf(
       'mintAsset',
       <MintAssetButton type={'menu'} node={node as TaroNode} />,
-      isStarted && isTaro,
-    ),
-    addItemIf(
-      'mintAsset',
-      <OpenSendAssetModal isContextMenu={true} />,
       isStarted && isTaro,
     ),
     addItemIf(
