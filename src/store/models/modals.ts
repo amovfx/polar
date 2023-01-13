@@ -271,8 +271,8 @@ const modalsModel: ModalsModel = {
     };
   }),
   //New Taro Address Modal
-  showNewAddress: thunk((actions, { nodeName }) => {
-    actions.setNewAddress({ visible: true, nodeName });
+  showNewAddress: thunk(actions => {
+    actions.setNewAddress({ visible: true });
   }),
   hideNewAddress: thunk(actions => {
     actions.setNewAddress({ visible: false });
