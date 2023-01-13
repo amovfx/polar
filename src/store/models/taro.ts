@@ -1,11 +1,12 @@
-import React from 'react';
 import { action, Action, thunk, Thunk, thunkOn, ThunkOn } from 'easy-peasy';
 import * as TARO from 'shared/tarodTypes';
 import { LightningNode, Status, TarodNode, TaroNode } from 'shared/types';
 import * as PTARO from 'lib/taro/types';
 import { StoreInjections } from 'types';
+import { BLOCKS_TIL_CONFIRMED } from 'utils/constants';
 import { RootModel } from './';
 
+//This is the minimum balance that a taro node must have access to in order to mint assets
 export const TARO_MIN_LND_BALANCE = 10000;
 
 export interface TaroNodeMapping {
@@ -15,6 +16,17 @@ export interface TaroNodeMapping {
 export interface TaroNodeModel {
   assets?: PTARO.TaroAsset[];
   balances?: PTARO.TaroBalance[];
+}
+
+export interface MintAssetPayload {
+  node: TarodNode;
+  assetType: PTARO.TARO_ASSET_TYPE.NORMAL | PTARO.TARO_ASSET_TYPE.COLLECTIBLE;
+  name: string;
+  amount: number;
+  metaData: string;
+  enableEmission: boolean;
+  skipBatch: boolean;
+  autoFund: boolean;
 }
 
 export interface MintAssetPayload {
@@ -77,7 +89,6 @@ const taroModel: TaroModel = {
     const balances = await api.listBalances(node);
     actions.setBalances({ node, balances });
   }),
-
   getAllInfo: thunk(async (actions, node) => {
     await actions.getAssets(node);
     await actions.getBalances(node);
@@ -102,7 +113,14 @@ const taroModel: TaroModel = {
       ) as LightningNode;
       //fund lnd node
       if (autoFund) {
+<<<<<<< HEAD
         await getStoreActions().lightning.depositFunds({ node: lndNode, sats: '10000' });
+=======
+        await getStoreActions().lightning.depositFunds({
+          node: lndNode,
+          sats: TARO_MIN_LND_BALANCE.toString(),
+        });
+>>>>>>> c5796cca (fix(new-asset-modal): clean up for review)
       }
 
       //mint taro asset
@@ -116,16 +134,15 @@ const taroModel: TaroModel = {
         skipBatch,
       };
       const res = await taroapi.mintAsset(node, req);
-      (async () => {
-        //update network
-        const btcNode =
-          network.nodes.bitcoin.find(n => n.name === lndNode.backendName) ||
-          network.nodes.bitcoin[0];
-        await getStoreActions().bitcoind.mine({
-          blocks: BLOCKS_TIL_CONFIRMED,
-          node: btcNode,
-        });
-      })();
+      //update network
+      const btcNode =
+        network.nodes.bitcoin.find(n => n.name === lndNode.backendName) ||
+        network.nodes.bitcoin[0];
+      //missing await is intentional, we dont have to wait for bitcoin to mine
+      getStoreActions().bitcoind.mine({
+        blocks: BLOCKS_TIL_CONFIRMED,
+        node: btcNode,
+      });
       return res;
     },
   ),

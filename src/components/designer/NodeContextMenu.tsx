@@ -10,7 +10,7 @@ import SendOnChainButton from './bitcoind/actions/SendOnChainButton';
 import { OpenChannelButtons, PaymentButtons } from './lightning/actions';
 import { MintAssetButton, NewAddressButton } from './taro/actions';
 
-const addItemIf = (
+  const addItemIf = (
   key: string,
   cmp: ReactElement,
   condition?: boolean,
