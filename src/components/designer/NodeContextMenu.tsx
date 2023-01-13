@@ -37,6 +37,7 @@ const NodeContextMenu: React.FC<Props> = ({ node: { id }, children }) => {
   // don't add a context menu if the node is not valid
   if (!node) return <>{children}</>;
 
+
   const isTaro = node.type === 'taro';
   const isLN = node.type === 'lightning';
   const isBackend = node.type === 'bitcoin';

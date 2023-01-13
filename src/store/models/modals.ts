@@ -73,6 +73,7 @@ export interface ModalsModel {
   advancedOptions: AdvancedOptionsModel;
   imageUpdates: ImageUpdatesModel;
   sendOnChain: SendOnChainModel;
+  
   assetInfo: AssetInfoModel;
   mintAsset: MintAssetModel;
   newAddress: NewAddressModel;
@@ -103,8 +104,6 @@ export interface ModalsModel {
   setMintAsset: Action<ModalsModel, Partial<MintAssetModel>>;
   showMintAsset: Thunk<ModalsModel, Partial<MintAssetModel>, StoreInjections>;
   hideMintAsset: Thunk<ModalsModel>;
-  hideSendAsset: Thunk<ModalsModel>;
-  showSendAsset: Thunk<ModalsModel>;
   showNewAddress: Thunk<ModalsModel, Partial<NewAddressModel>>;
   hideNewAddress: Thunk<ModalsModel>;
   setNewAddress: Action<ModalsModel, Partial<NewAddressModel>>;
@@ -127,19 +126,6 @@ const modalsModel: ModalsModel = {
       ...payload,
     };
   }),
-  showMintAsset: thunk((actions, { nodeName }) => {
-    actions.setMintAsset({ visible: true, nodeName });
-  }),
-  hideMintAsset: thunk((actions, payload, { getStoreActions, getState }) => {
-    actions.setMintAsset({ visible: false });
-  }),
-  setMintAsset: action((state, payload) => {
-    state.mintAsset = {
-      ...state.mintAsset,
-      ...payload,
-    };
-  }),
-
   showOpenChannel: thunk((actions, { to, from, linkId }) => {
     actions.setOpenChannel({ visible: true, to, from, linkId });
   }),
@@ -281,19 +267,6 @@ const modalsModel: ModalsModel = {
   setMintAsset: action((state, payload) => {
     state.mintAsset = {
       ...state.mintAsset,
-      ...payload,
-    };
-  }),
-  //Send Taro Asset Modal
-  showSendAsset: thunk(actions => {
-    actions.setSendAsset({ visible: true });
-  }),
-  hideSendAsset: thunk(actions => {
-    actions.setSendAsset({ visible: false });
-  }),
-  setSendAsset: action((state, payload) => {
-    state.sendAsset = {
-      ...state.sendAsset,
       ...payload,
     };
   }),

@@ -6,7 +6,6 @@ import * as PTARO from 'lib/taro/types';
 import { StoreInjections } from 'types';
 import { RootModel } from './';
 
-//This is the minimum balance that a taro node must have access to in order to mint assets
 export const TARO_MIN_LND_BALANCE = 10000;
 
 export interface TaroNodeMapping {
@@ -16,18 +15,6 @@ export interface TaroNodeMapping {
 export interface TaroNodeModel {
   assets?: PTARO.TaroAsset[];
   balances?: PTARO.TaroBalance[];
-  batchKey?: string;
-}
-
-export interface MintAssetPayload {
-  node: TarodNode;
-  assetType: PTARO.TARO_ASSET_TYPE.NORMAL | PTARO.TARO_ASSET_TYPE.COLLECTIBLE;
-  name: string;
-  amount: number;
-  metaData: string;
-  enableEmission: boolean;
-  skipBatch: boolean;
-  autoFund: boolean;
 }
 
 export interface MintAssetPayload {
@@ -44,25 +31,6 @@ export interface NewAddressPayload {
   node: TarodNode;
   genesisBootstrapInfo: string;
   amount: string;
-}
-
-export interface SendAssetPayload {
-  from: TaroNode;
-  to: TaroNode;
-  genesisBootstrapInfo: string;
-  amount: number;
-}
-export interface NewAddressPayload {
-  node: TarodNode;
-  genesisBootstrapInfo: string;
-  amount: string;
-}
-
-export interface SendAssetPayload {
-  from: TaroNode;
-  to: TaroNode;
-  genesisBootstrapInfo: string;
-  amount: number;
 }
 
 export interface TaroModel {
@@ -134,10 +102,7 @@ const taroModel: TaroModel = {
       ) as LightningNode;
       //fund lnd node
       if (autoFund) {
-        await getStoreActions().lightning.depositFunds({
-          node: lndNode,
-          sats: TARO_MIN_LND_BALANCE.toString(),
-        });
+        await getStoreActions().lightning.depositFunds({ node: lndNode, sats: '10000' });
       }
 
       //mint taro asset
@@ -151,17 +116,16 @@ const taroModel: TaroModel = {
         skipBatch,
       };
       const res = await taroapi.mintAsset(node, req);
-
-      //update network
-      const btcNode =
-        network.nodes.bitcoin.find(n => n.name === lndNode.backendName) ||
-        network.nodes.bitcoin[0];
-      //missing await is intentional, we dont have to wait for bitcoin to mine
-      getStoreActions().bitcoind.mine({
-        blocks: BLOCKS_TIL_CONFIRMED,
-        node: btcNode,
-      });
-
+      (async () => {
+        //update network
+        const btcNode =
+          network.nodes.bitcoin.find(n => n.name === lndNode.backendName) ||
+          network.nodes.bitcoin[0];
+        await getStoreActions().bitcoind.mine({
+          blocks: BLOCKS_TIL_CONFIRMED,
+          node: btcNode,
+        });
+      })();
       return res;
     },
   ),
