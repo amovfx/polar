@@ -181,7 +181,10 @@ const NewAddressModal: React.FC<Props> = ({ network }) => {
           {
             <Alert
               type={
-                selectedAmount && selectedGenesisBootstrapInfo && taroAddress
+                selectedAmount &&
+                selectedGenesisBootstrapInfo &&
+                taroAddress &&
+                !genesisBootstrapInfoError
                   ? 'success'
                   : 'error'
               }
@@ -192,7 +195,11 @@ const NewAddressModal: React.FC<Props> = ({ network }) => {
                   <CopyIcon
                     label={taroAddress}
                     value={taroAddress as string}
-                    text={ellipseInner(taroAddress, 20, 30)}
+                    text={
+                      !genesisBootstrapInfoError
+                        ? ellipseInner(taroAddress, 20, 30)
+                        : 'Bad Gensesis Info'
+                    }
                   />
                 )
               }
