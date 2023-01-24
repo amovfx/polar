@@ -17,7 +17,7 @@ interface Props {
 }
 
 const OpenSendAssetModal: React.FC<Props> = ({ node, type }) => {
-  const { l } = usePrefixedTranslation('cmps.designer.taro.ActionsTab.NewAddressButton');
+  const { l } = usePrefixedTranslation('cmps.designer.taro.actions.NewAddressButton');
   const { showNewAddress } = useStoreActions(s => s.modals);
   const btnlabel = l('newAddress');
 

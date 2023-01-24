@@ -206,7 +206,7 @@ const NewAddressModal: React.FC<Props> = ({ network }) => {
   return (
     <>
       <Modal
-        title={l('title', { name: thisTaroNode.name })}
+        title={l('title', { name: nodeName })}
         open={visible}
         destroyOnClose
         cancelText={l('cancelBtn')}

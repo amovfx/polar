@@ -73,7 +73,7 @@ export interface ModalsModel {
   advancedOptions: AdvancedOptionsModel;
   imageUpdates: ImageUpdatesModel;
   sendOnChain: SendOnChainModel;
-  
+
   assetInfo: AssetInfoModel;
   mintAsset: MintAssetModel;
   newAddress: NewAddressModel;

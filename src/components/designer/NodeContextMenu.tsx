@@ -10,7 +10,7 @@ import SendOnChainButton from './bitcoind/actions/SendOnChainButton';
 import { OpenChannelButtons, PaymentButtons } from './lightning/actions';
 import { MintAssetButton, NewAddressButton } from './taro/actions';
 
-  const addItemIf = (
+const addItemIf = (
   key: string,
   cmp: ReactElement,
   condition?: boolean,
@@ -36,7 +36,6 @@ const NodeContextMenu: React.FC<Props> = ({ node: { id }, children }) => {
   const node = [...bitcoin, ...lightning, ...taro].find(n => n.name === id);
   // don't add a context menu if the node is not valid
   if (!node) return <>{children}</>;
-
 
   const isTaro = node.type === 'taro';
   const isLN = node.type === 'lightning';

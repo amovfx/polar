@@ -16,8 +16,6 @@ export interface TaroNodeMapping {
 export interface TaroNodeModel {
   assets?: PTARO.TaroAsset[];
   balances?: PTARO.TaroBalance[];
-<<<<<<< HEAD
-=======
 }
 
 export interface MintAssetPayload {
@@ -29,7 +27,6 @@ export interface MintAssetPayload {
   enableEmission: boolean;
   skipBatch: boolean;
   autoFund: boolean;
->>>>>>> 16eb13b7 (feat(new-address-modal): squashed comit)
 }
 export interface NewAddressPayload {
   node: TarodNode;
@@ -128,14 +125,10 @@ const taroModel: TaroModel = {
       ) as LightningNode;
       //fund lnd node
       if (autoFund) {
-<<<<<<< HEAD
-        await getStoreActions().lightning.depositFunds({ node: lndNode, sats: '10000' });
-=======
         await getStoreActions().lightning.depositFunds({
           node: lndNode,
           sats: TARO_MIN_LND_BALANCE.toString(),
         });
->>>>>>> c5796cca (fix(new-asset-modal): clean up for review)
       }
 
       //mint taro asset
