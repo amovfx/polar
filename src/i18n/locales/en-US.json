@@ -314,7 +314,7 @@
   "cmps.designer.taro.actions.MintAssetModal.amountPlaceholder": "1",
   "cmps.designer.taro.actions.MintAssetModal.metaData": "Meta Data",
   "cmps.designer.taro.actions.MintAssetModal.metaDataPlaceholder": "Optional",
-  "cmps.designer.taro.actions.MintAssetModal.mintSuccess": "Successfully minted asset: '{{name}}' with batchkey: {{batchKey}}",
+  "cmps.designer.taro.actions.MintAssetModal.mintSuccess": "Successfully minted asset: '{{name}}'",
   "cmps.designer.taro.actions.MintAssetModal.mintError": "Failed to mint {{amount}} {{name}}",
   "cmps.designer.taro.actions.MintAssetModal.deposit": "Deposit enough funds to {{selectedFrom}}",
   "cmps.designer.taro.actions.MintAssetModal.lndBalanceError": "Insufficient balance on lnd node {{lndNode}}",

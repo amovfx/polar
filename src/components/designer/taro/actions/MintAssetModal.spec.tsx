@@ -131,6 +131,9 @@ describe('MintAssetModal', () => {
         expect(taroServiceMock.mintAsset).toHaveBeenCalled();
         expect(bitcoindServiceMock.mine).toBeCalledTimes(1);
       });
+      await waitFor(() => {
+        expect(getByText("Successfully minted asset: 'test'")).toBeInTheDocument();
+      });
     });
 
     it('should mint collectible asset', async () => {

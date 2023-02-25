@@ -40,11 +40,10 @@ const MintAssetModal: React.FC<Props> = ({ network }) => {
 
   const mintAssetAsync = useAsyncCallback(async (payload: MintAssetPayload) => {
     try {
-      const res = await mintAsset(payload);
+      await mintAsset(payload);
       notify({
         message: l('mintSuccess', {
           name: assetName,
-          batchKey: res.batchKey,
         }),
       });
       hideMintAsset();
