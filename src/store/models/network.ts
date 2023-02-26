@@ -40,7 +40,7 @@ const { l } = prefixTranslation('store.models.network');
 
 interface AddNetworkArgs {
   name: string;
-  taroNodes: number;
+  //taroNodes: number;
   lndNodes: number;
   clightningNodes: number;
   eclairNodes: number;
