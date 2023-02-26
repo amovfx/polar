@@ -73,6 +73,7 @@ const NewNetwork: React.SFC = () => {
           layout="vertical"
           colon={false}
           initialValues={{
+            taroNodes: 0,
             lndNodes: isWindows() ? 2 : 1,
             clightningNodes: isWindows() ? 0 : 1,
             eclairNodes: 1,
@@ -108,6 +109,15 @@ const NewNetwork: React.SFC = () => {
           )}
           <Styled.Divider orientation="left">{l('managedLabel')}</Styled.Divider>
           <Row gutter={16}>
+            <Col span={6}>
+              <Form.Item
+                name="taroNodes"
+                label={dockerConfigs.tarod.name}
+                rules={[{ required: true, message: l('cmps.forms.required') }]}
+              >
+                <InputNumber min={0} max={10} />
+              </Form.Item>
+            </Col>
             <Col span={6}>
               <Form.Item
                 name="lndNodes"
