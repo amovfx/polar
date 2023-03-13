@@ -41,7 +41,7 @@ export const defaultTarodNewAddress = (value: Partial<Addr>): Addr => ({
 export const defaultTarodSendAsset = (
   value: Partial<SendAssetResponse>,
 ): SendAssetResponse => ({
-  transferTxid: Buffer.from(''),
+  transferTxid: '',
   anchorOutputIndex: 0,
   transferTxBytes: Buffer.from(''),
   totalFeeSats: '',
