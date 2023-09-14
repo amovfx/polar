@@ -189,7 +189,7 @@ const NetworkView: React.FC<RouteComponentProps<MatchParams>> = ({ match }) => {
             }}
             onDeleteClick={() => showRemoveModal(network.id, network.name)}
             onExportClick={() => exportAsync.execute(network.id, network.name)}
-            onDockerNetworkClick={() => externalizeClick.execute(network.id)}
+            onDockerNetworkClick={() => externalizeClick.execute()}
           />
         }
       />
