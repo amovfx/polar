@@ -112,7 +112,7 @@ const NetworkView: React.FC<RouteComponentProps<MatchParams>> = ({ match }) => {
     });
   };
 
-  const externalizeClick = useAsyncCallback(async (id: number) => {
+  const externalizeClick = useAsyncCallback(async () => {
     network && showDockerNetwork({ networkName: network.name });
   });
 

@@ -50,7 +50,7 @@ const DockerNetworkName: React.FC<Props> = ({ onChange, formName }) => {
         }))}
         placeholder="Select a network leave blank to clear"
         filterOption={(inputValue, option) =>
-          option!.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+          option?.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
         }
         onChange={validateNetworkName}
         status={status}
