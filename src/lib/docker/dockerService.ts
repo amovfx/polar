@@ -179,7 +179,7 @@ class DockerService implements DockerLibrary {
   async createDockerExternalNetwork(name: string) {
     const dockerInst = await getDocker();
     const dockerNetworks = await dockerInst.listNetworks();
-    const networkExists = dockerNetworks.find(n => n.Name === name);
+    const networkExists = dockerNetworks?.find(n => n.Name === name);
     if (!networkExists) {
       const result = await dockerInst.createNetwork({
         Name: name,
@@ -195,7 +195,7 @@ class DockerService implements DockerLibrary {
    */
   async getDockerExternalNetworks(): Promise<string[]> {
     const dockerInst = await getDocker();
-    const dockerNetworks = await dockerInst.listNetworks();
+    const dockerNetworks = await dockerInst?.listNetworks();
     return dockerNetworks.map(n => n.Name);
   }
 

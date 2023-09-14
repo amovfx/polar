@@ -1,8 +1,15 @@
 import React from 'react';
 import { fireEvent, waitFor } from '@testing-library/react';
 import os from 'os';
+import { Status } from 'shared/types';
 import { CustomImage } from 'types';
-import { injections, renderWithProviders, suppressConsoleErrors } from 'utils/tests';
+import { initChartFromNetwork } from 'utils/chart';
+import {
+  getNetwork,
+  injections,
+  renderWithProviders,
+  suppressConsoleErrors,
+} from 'utils/tests';
 import { HOME, NETWORK_VIEW } from 'components/routing';
 import NewNetwork from './NewNetwork';
 
@@ -24,12 +31,22 @@ describe('NewNetwork component', () => {
     },
   ];
   const renderComponent = (withCustom = false) => {
+    const network = getNetwork(0, 'test network', Status.Stopped);
     const initialState = {
+      network: {
+        networks: [network],
+      },
       app: {
         settings: {
           nodeImages: {
             custom: withCustom ? customImages : [],
           },
+        },
+      },
+      designer: {
+        activeId: network.id,
+        allCharts: {
+          1: initChartFromNetwork(network),
         },
       },
     };

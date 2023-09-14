@@ -45,7 +45,7 @@ const DockerNetworkName: React.FC<Props> = ({ onChange, formName }) => {
   return (
     <Form.Item name={formName} label="External Docker Network" help={help}>
       <AutoComplete
-        options={networks.map(network => ({
+        options={networks?.map(network => ({
           value: network,
         }))}
         placeholder="Select a network leave blank to clear"

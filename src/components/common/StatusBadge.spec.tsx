@@ -1,11 +1,26 @@
 import React from 'react';
 import { Status } from 'shared/types';
-import { renderWithProviders } from 'utils/tests';
+import { initChartFromNetwork } from 'utils/chart';
+import { getNetwork, renderWithProviders } from 'utils/tests';
 import StatusTag from './StatusTag';
 
 describe('StatusBadge Component', () => {
   const renderComponent = (status: Status) => {
-    return renderWithProviders(<StatusTag status={status} />);
+    const network = getNetwork(0, 'test network', status);
+    network.status = status;
+    const initialState = {
+      network: {
+        networks: [network],
+      },
+      designer: {
+        activeId: network.id,
+        allCharts: {
+          1: initChartFromNetwork(network),
+        },
+      },
+    };
+
+    return renderWithProviders(<StatusTag networkId={0} />, { initialState });
   };
 
   it('should render the Starting status', () => {
