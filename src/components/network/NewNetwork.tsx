@@ -91,7 +91,7 @@ const NewNetwork: React.SFC = () => {
             >
               <Input placeholder={l('namePhldr')} />
             </Form.Item>
-            <DockerNetworkName formName="externalNetworkName" onChange={console.log} />
+            <DockerNetworkName formName="externalNetworkName" />
           </Col>
           {customNodes.length > 0 && (
             <>
