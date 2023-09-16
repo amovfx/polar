@@ -12,10 +12,11 @@ interface Props {
 
 const DockerNetworkName: React.FC<Props> = ({ formName, setStatus }) => {
   const { l } = usePrefixedTranslation('cmps.common.form.DockerNetworkName');
+
   const { getExternalDockerNetworks } = useStoreActions(s => s.network);
+
   const [dockerNetworks, setDockerNetworks] = useState<string[]>([]);
   const [inputStatus, setInputStatus] = useState<Status>(undefined);
-
   const [help, setHelp] = useState<string>('');
 
   const setLocalStatus = (value: Status) => {
