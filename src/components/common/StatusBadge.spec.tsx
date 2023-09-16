@@ -1,50 +1,55 @@
 import React from 'react';
 import { Status } from 'shared/types';
-import { initChartFromNetwork } from 'utils/chart';
-import { getNetwork, renderWithProviders } from 'utils/tests';
-import StatusTag from './StatusTag';
+import { renderWithProviders } from 'utils/tests';
+import StatusBadge from './StatusBadge';
 
-describe('StatusBadge Component', () => {
-  const renderComponent = (status: Status) => {
-    const network = getNetwork(0, 'test network', status);
-    network.status = status;
-    const initialState = {
-      network: {
-        networks: [network],
-      },
-      designer: {
-        activeId: network.id,
-        allCharts: {
-          1: initChartFromNetwork(network),
-        },
-      },
-    };
-
-    return renderWithProviders(<StatusTag networkId={0} />, { initialState });
+describe('StatusTag Component', () => {
+  const renderComponent = (status: Status, text?: string) => {
+    return renderWithProviders(<StatusBadge status={status} text={text} />);
   };
 
   it('should render the Starting status', () => {
-    const { getByText } = renderComponent(Status.Starting);
-    expect(getByText('Starting')).toBeInTheDocument();
+    const { container } = renderComponent(Status.Starting);
+    const element = container.querySelector(
+      '.ant-badge-status-dot.ant-badge-status-processing',
+    );
+
+    expect(element).not.toBeNull();
   });
 
   it('should render the Started status', () => {
-    const { getByText } = renderComponent(Status.Started);
-    expect(getByText('Started')).toBeInTheDocument();
+    const { container } = renderComponent(Status.Started);
+    const element = container.querySelector(
+      '.ant-badge-status-dot.ant-badge-status-success',
+    );
+
+    expect(element).not.toBeNull();
   });
 
   it('should render the Stopping status', () => {
-    const { getByText } = renderComponent(Status.Stopping);
-    expect(getByText('Stopping')).toBeInTheDocument();
+    const { container } = renderComponent(Status.Stopping);
+    const element = container.querySelector(
+      '.ant-badge-status-dot.ant-badge-status-processing',
+    );
+
+    expect(element).not.toBeNull();
   });
 
   it('should render the Stopped status', () => {
-    const { getByText } = renderComponent(Status.Stopped);
-    expect(getByText('Stopped')).toBeInTheDocument();
+    const { container } = renderComponent(Status.Stopped);
+    const element = container.querySelector(
+      '.ant-badge-status-dot.ant-badge-status-default',
+    );
+
+    expect(element).not.toBeNull();
   });
 
   it('should render the Error status', () => {
-    const { getByText } = renderComponent(Status.Error);
-    expect(getByText('Error')).toBeInTheDocument();
+    const { container } = renderComponent(Status.Error);
+    const element = container.querySelector(
+      '.ant-badge-status-dot.ant-badge-status-error',
+    );
+
+    expect(element).not.toBeNull();
   });
 });

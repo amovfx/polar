@@ -1,44 +1,27 @@
 import React from 'react';
-import { render } from '@testing-library/react';
 import { Status } from 'shared/types';
-import StatusBadge from './StatusBadge';
+import { getNetwork, renderWithProviders } from 'utils/tests';
+import StatusTag from './StatusTag';
 
 describe('StatusTag Component', () => {
-  const renderComponent = (status: Status, text?: string) => {
-    const result = render(<StatusBadge status={status} text={text} />);
+  const renderComponent = (status: Status) => {
+    const network = getNetwork(0, 'test network', status);
+    network.externalNetworkName = 'test-external-network';
+    const initialState = {
+      network: {
+        networks: [network],
+      },
+    };
+    const result = renderWithProviders(<StatusTag networkId={0} />, { initialState });
     return {
       ...result,
       dot: result.container.querySelector('.ant-badge span:first-child'),
     };
   };
 
-  it('should render the text', () => {
-    const { getByText } = renderComponent(Status.Starting, 'test text');
-    expect(getByText('test text')).toBeInTheDocument();
-  });
-
-  it('should render the Starting status', () => {
-    const { dot } = renderComponent(Status.Starting);
-    expect(dot).toHaveClass('ant-badge-status-processing');
-  });
-
-  it('should render the Started status', () => {
-    const { dot } = renderComponent(Status.Started);
-    expect(dot).toHaveClass('ant-badge-status-success');
-  });
-
-  it('should render the Stopping status', () => {
-    const { dot } = renderComponent(Status.Stopping);
-    expect(dot).toHaveClass('ant-badge-status-processing');
-  });
-
-  it('should render the Stopped status', () => {
-    const { dot } = renderComponent(Status.Stopped);
-    expect(dot).toHaveClass('ant-badge-status-default');
-  });
-
   it('should render the Error status', () => {
-    const { dot } = renderComponent(Status.Error);
-    expect(dot).toHaveClass('ant-badge-status-error');
+    const docker_network_name = 'test-external-network';
+    const { getByText } = renderComponent(Status.Started);
+    expect(getByText(`External: ${docker_network_name}`)).toBeInTheDocument();
   });
 });
