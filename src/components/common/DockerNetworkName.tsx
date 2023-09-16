@@ -7,7 +7,6 @@ type Status = '' | 'warning' | 'error' | undefined;
 
 interface Props {
   formName: string;
-  status?: Status;
   setStatus?: (value: Status) => void;
 }
 
