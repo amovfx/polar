@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { AutoComplete, Form } from 'antd';
+import { usePrefixedTranslation } from 'hooks';
 import { useStoreActions } from 'store';
 
 type Status = '' | 'warning' | 'error' | undefined;
@@ -11,15 +12,16 @@ interface Props {
 }
 
 const DockerNetworkName: React.FC<Props> = ({ formName, setStatus }) => {
+  const { l } = usePrefixedTranslation('cmps.common.form.DockerNetworkName');
   const { getExternalDockerNetworks } = useStoreActions(s => s.network);
   const [dockerNetworks, setDockerNetworks] = useState<string[]>([]);
-  const [_status, _setStatus] = useState<Status>(undefined);
+  const [inputStatus, setInputStatus] = useState<Status>(undefined);
 
   const [help, setHelp] = useState<string>('');
 
   const setLocalStatus = (value: Status) => {
     setStatus && setStatus(value);
-    _setStatus(value);
+    setInputStatus(value);
   };
 
   useEffect(() => {
@@ -31,37 +33,37 @@ const DockerNetworkName: React.FC<Props> = ({ formName, setStatus }) => {
 
   const validateNetworkName = async (value: string) => {
     if (value.length === 0 || value === 'default') {
-      setHelp('Docker Network will be cleared');
+      setHelp(l('helpClear'));
       setLocalStatus(undefined);
       return;
     }
     const regex = /^[a-zA-Z0-9][a-zA-Z0-9_.-]{1,63}$/;
     if (regex.test(value)) {
       if (!dockerNetworks.includes(value)) {
-        setHelp('Docker External Network will be created');
+        setHelp(l('helpCreate'));
         setLocalStatus('warning');
       } else {
-        setHelp(`Docker Network will be attached to ${value}`);
+        setHelp(l('helpAttach', { dockerNetwork: value }));
         setLocalStatus(undefined);
       }
     } else {
-      setHelp('Invalid Docker Network Name');
+      setHelp(l('helpInvalid'));
       setLocalStatus('error');
     }
   };
 
   return (
-    <Form.Item name={formName} label="External Docker Network" help={help}>
+    <Form.Item name={formName} label={l('label')} help={help}>
       <AutoComplete
         options={dockerNetworks?.map(network => ({
           value: network,
         }))}
-        placeholder="Select a network leave blank to clear"
+        placeholder={l('placeholder')}
         filterOption={(inputValue, option) =>
           option?.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
         }
         onChange={validateNetworkName}
-        status={_status}
+        status={inputStatus}
       />
     </Form.Item>
   );

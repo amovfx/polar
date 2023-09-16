@@ -37,6 +37,7 @@ describe('DockerNetworkName', () => {
       await renderComponent();
       const { getByText } = result;
       expect(getByText('External Docker Network')).toBeInTheDocument();
+      expect(getByText('Select a network leave blank to clear')).toBeInTheDocument();
     });
 
     it('should fetch external docker networks on mount', async () => {
@@ -46,6 +47,20 @@ describe('DockerNetworkName', () => {
   });
 
   describe('When the form item validates', async () => {
+    it('should show help message for creating an external docker network', async () => {
+      await renderComponent();
+
+      const { getByLabelText, findByText, container } = result;
+      const input = getByLabelText('External Docker Network') as HTMLInputElement;
+      fireEvent.change(input, { target: { value: 'test-network-3' } });
+      expect(
+        await findByText('Docker External Network will be created'),
+      ).toBeInTheDocument();
+      expect(mockSetStatus).toHaveBeenCalledWith('warning');
+      const element = container.querySelector('.ant-select.ant-select-status-warning');
+      expect(element).not.toBeNull();
+    });
+
     it('should show help message for attaching to a external docker network', async () => {
       await renderComponent();
       const { getByLabelText, getByText, findByText, container } = result;
@@ -64,20 +79,6 @@ describe('DockerNetworkName', () => {
       ).toBeInTheDocument();
       expect(mockSetStatus).toHaveBeenCalledWith(undefined);
       const element = container.querySelector('.ant-select.ant-select-status-success');
-      expect(element).not.toBeNull();
-    });
-
-    it('should show help message for creating an external docker network', async () => {
-      await renderComponent();
-
-      const { getByLabelText, findByText, container } = result;
-      const input = getByLabelText('External Docker Network') as HTMLInputElement;
-      fireEvent.change(input, { target: { value: 'test-network-3' } });
-      expect(
-        await findByText('Docker External Network will be created'),
-      ).toBeInTheDocument();
-      expect(mockSetStatus).toHaveBeenCalledWith('warning');
-      const element = container.querySelector('.ant-select.ant-select-status-warning');
       expect(element).not.toBeNull();
     });
 
