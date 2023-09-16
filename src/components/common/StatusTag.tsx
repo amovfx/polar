@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Row, Tag } from 'antd';
 import { useTheme } from 'hooks/useTheme';
 import { Status } from 'shared/types';
-import { useStoreState } from 'store';
+import { useStoreActions, useStoreState } from 'store';
 
 export interface StatusTagProps {
   networkId: number;
@@ -14,6 +14,8 @@ const StatusTag: React.FC<StatusTagProps> = ({ networkId }) => {
 
   const { networks } = useStoreState(s => s.network);
   const network = networks.find(n => n.id === networkId);
+  const { getExternalDockerNetworks } = useStoreActions(s => s.network);
+  const [dockerNetworks, setDockerNetworks] = useState<string[]>([]);
 
   const { statusTag } = useTheme();
 
@@ -25,6 +27,13 @@ const StatusTag: React.FC<StatusTagProps> = ({ networkId }) => {
     [Status.Error]: 'red',
   };
 
+  useEffect(() => {
+    (async () => {
+      const networks = await getExternalDockerNetworks();
+      setDockerNetworks(networks);
+    })();
+  }, [network?.externalNetworkName]);
+
   return (
     <Row>
       {network && (
@@ -32,8 +41,11 @@ const StatusTag: React.FC<StatusTagProps> = ({ networkId }) => {
           {t(`enums.status.${Status[network.status]}`)}
         </Tag>
       )}
-      {network?.externalNetworkName && (
+      {network?.externalNetworkName &&
+      dockerNetworks.includes(network?.externalNetworkName) ? (
         <Tag color="blue">{`External: ${network.externalNetworkName}`}</Tag>
+      ) : (
+        <Tag color="error">{`External Docker Network: ${network?.externalNetworkName} does not exist`}</Tag>
       )}
     </Row>
   );
