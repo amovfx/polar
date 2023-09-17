@@ -133,5 +133,10 @@ describe('NewNetwork component', () => {
       expect(await findByText('Unable to create the new network')).toBeInTheDocument();
       expect(await findByText('asdf')).toBeInTheDocument();
     });
+
+    it('should contain a input field for an external docker network', () => {
+      const { getByLabelText } = renderComponent();
+      expect(getByLabelText('External Docker Network')).toHaveValue('');
+    });
   });
 });
