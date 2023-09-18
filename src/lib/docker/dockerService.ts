@@ -123,9 +123,15 @@ class DockerService implements DockerLibrary {
    */
   async saveComposeFile(network: Network) {
     const file = new ComposeFile(network.id);
-    if (network.externalNetworkName !== '' || 'default' || undefined) {
+    if (network.externalNetworkName !== undefined) {
       file.setExternalNetworkName(network.externalNetworkName);
-      await this.createDockerExternalNetwork(network.externalNetworkName as string);
+      if (
+        !(
+          network.externalNetworkName === 'default' ||
+          network.externalNetworkName.length === 0
+        )
+      )
+        await this.createDockerExternalNetwork(network.externalNetworkName as string);
     }
 
     const { bitcoin, lightning, tap } = network.nodes;
@@ -190,6 +196,7 @@ class DockerService implements DockerLibrary {
       info(`Network ${name} already exists attaching to it`);
     }
   }
+
   /**
    * Return a list of external docker networks
    */
