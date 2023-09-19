@@ -183,10 +183,10 @@ class DockerService implements DockerLibrary {
     info(`Network started:\n ${result.out || result.err}`);
   }
   async createDockerExternalNetwork(name: string) {
-    const dockerInst = await getDocker();
-    const dockerNetworks = await dockerInst.listNetworks();
-    const networkExists = dockerNetworks?.find(n => n.Name === name);
+    const dockerNetworks = await this.getDockerExternalNetworks();
+    const networkExists = dockerNetworks?.find(n => n === name);
     if (!networkExists) {
+      const dockerInst = await getDocker();
       const result = await dockerInst.createNetwork({
         Name: name,
         Driver: 'bridge',

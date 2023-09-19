@@ -1,4 +1,5 @@
 import * as electron from 'electron';
+import * as electronlog from 'electron-log';
 import * as fs from 'fs-extra';
 import { join } from 'path';
 import { IChart } from '@mrblenny/react-flow-chart';
@@ -29,6 +30,7 @@ const fsMock = fs as jest.Mocked<typeof fs>;
 const filesMock = files as jest.Mocked<typeof files>;
 const composeMock = compose as jest.Mocked<typeof compose>;
 const electronMock = electron as jest.Mocked<typeof electron>;
+const electronLogMock = electronlog as jest.Mocked<typeof electronlog>;
 const mockDockerode = Dockerode as unknown as jest.Mock<Dockerode>;
 
 describe('DockerService', () => {
@@ -201,6 +203,50 @@ describe('DockerService', () => {
         expect.stringContaining(
           `container_name: polar-n1-${network.nodes.lightning[0].name}`,
         ),
+      );
+    });
+
+    it('should save a with a docker external network', async () => {
+      const net = getNetwork(1, 'my network', undefined, 2);
+      net.externalNetworkName = 'external_network_2';
+      mockDockerode.prototype.listNetworks.mockResolvedValue([
+        { Name: 'external_network_1' },
+        { Name: 'external_network_2' },
+      ]);
+      await dockerService.saveComposeFile(net);
+      expect(filesMock.write).toBeCalledWith(
+        expect.stringContaining('docker-compose.yml'),
+        expect.stringContaining(`external: true`),
+      );
+    });
+    it('should save a with a docker external network', async () => {
+      const net = getNetwork(1, 'my network', undefined, 2);
+      net.externalNetworkName = 'external_network_3';
+      mockDockerode.prototype.listNetworks.mockResolvedValue([
+        { Name: 'external_network_1' },
+        { Name: 'external_network_2' },
+      ]);
+      await dockerService.saveComposeFile(net);
+      expect(filesMock.write).toBeCalledWith(
+        expect.stringContaining('docker-compose.yml'),
+        expect.stringContaining(`external: true`),
+      );
+    });
+
+    it('should save a without a docker external network', async () => {
+      const net = getNetwork(1, 'my network', undefined, 2);
+      net.externalNetworkName = '';
+      await dockerService.saveComposeFile(net);
+      expect(filesMock.write).toBeCalledWith(
+        expect.stringContaining('docker-compose.yml'),
+        expect.not.stringContaining(`external: true`),
+      );
+
+      net.externalNetworkName = 'default';
+      await dockerService.saveComposeFile(net);
+      expect(filesMock.write).toBeCalledWith(
+        expect.stringContaining('docker-compose.yml'),
+        expect.not.stringContaining(`external: true`),
       );
     });
 
@@ -678,6 +724,41 @@ describe('DockerService', () => {
         undefined,
       );
       Object.defineProperty(electronMock.remote, 'process', { get: () => ({ env: {} }) });
+    });
+    it('should return a list of external docker networks', async () => {
+      mockDockerode.prototype.listNetworks.mockResolvedValue([
+        { Name: 'external_network_1' },
+        { Name: 'external_network_2' },
+      ]);
+      const networks = await dockerService.getDockerExternalNetworks();
+      expect(networks).toEqual(['external_network_1', 'external_network_2']);
+    });
+
+    it('should attach an external docker network', async () => {
+      mockDockerode.prototype.listNetworks.mockResolvedValue([
+        { Name: 'external_network_1' },
+        { Name: 'external_network_2' },
+      ]);
+      await dockerService.createDockerExternalNetwork('external_network_1');
+
+      expect(mockDockerode.prototype.createNetwork).not.toBeCalled();
+      expect(electronLogMock.info).toBeCalledWith(expect.stringContaining('attaching'));
+    });
+
+    it('should create an external docker network', async () => {
+      mockDockerode.prototype.listNetworks.mockResolvedValue([
+        { Name: 'external_network_1' },
+        { Name: 'external_network_2' },
+      ]);
+      await dockerService.createDockerExternalNetwork('external_network_3');
+      const name = 'external_network_3';
+      expect(mockDockerode.prototype.createNetwork).toBeCalledWith({
+        Name: name,
+        Driver: 'bridge',
+      });
+      expect(electronLogMock.info).toBeCalledWith(
+        expect.stringContaining(`Network ${name} created:`),
+      );
     });
   });
 
