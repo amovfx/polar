@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAsyncCallback } from 'react-async-hook';
 import { Form, Modal } from 'antd';
 import { usePrefixedTranslation } from 'hooks';
@@ -9,26 +9,47 @@ import DockerNetworkName from 'components/common/DockerNetworkName';
 interface Props {
   network: Network;
 }
+type Status = '' | 'warning' | 'error' | undefined;
 
 const DockerNetworkModal: React.FC<Props> = ({ network }) => {
   const { l } = usePrefixedTranslation('cmps.network.actions.DockerNetworkModal');
   const [form] = Form.useForm();
   const { visible } = useStoreState(s => s.modals.dockerNetwork);
   const { hideDockerNetwork } = useStoreActions(s => s.modals);
-  const { setDockerExternalNetworkName } = useStoreActions(s => s.network);
+
+  const { setDockerExternalNetworkName, getExternalDockerNetworks } = useStoreActions(
+    s => s.network,
+  );
 
   const { notify } = useStoreActions(s => s.app);
+  const [status, setStatus] = useState<Status>(undefined);
 
   const setExternalDockerNetworkAsync = useAsyncCallback(
     async (id: number, externalNetworkName: string | undefined) => {
       try {
         //setting externalNetworkName
         await setDockerExternalNetworkName({ id, externalNetworkName });
-        notify({
-          message: 'Attaching to external network',
-          description: `${externalNetworkName}`,
-        });
+
+        if (!externalNetworkName || externalNetworkName === 'default') {
+          notify({
+            message: 'Clearing external network',
+          });
+        } else {
+          const networks = await getExternalDockerNetworks();
+          if (!networks.includes(externalNetworkName as string)) {
+            notify({
+              message: 'Creating and attaching to external network',
+              description: `Creating ${externalNetworkName}`,
+            });
+          } else {
+            notify({
+              message: 'Attaching to existing external network',
+              description: `Attaching ${externalNetworkName}`,
+            });
+          }
+        }
         hideDockerNetwork();
+        setStatus(undefined);
       } catch (error: any) {
         notify({ message: l('submitError'), error });
       }
@@ -36,7 +57,6 @@ const DockerNetworkModal: React.FC<Props> = ({ network }) => {
   );
 
   const handleSubmit = (values: { networkName: string }) => {
-    console.log(values.networkName);
     setExternalDockerNetworkAsync.execute(network.id, values.networkName);
   };
 
@@ -44,20 +64,15 @@ const DockerNetworkModal: React.FC<Props> = ({ network }) => {
     <Modal
       title={l('title')}
       open={visible}
+      destroyOnClose
       onCancel={() => hideDockerNetwork()}
       onOk={form.submit}
       okButtonProps={{
         disabled: setExternalDockerNetworkAsync.loading || status === 'error',
       }}
     >
-      <Form
-        form={form}
-        layout="vertical"
-        hideRequiredMark
-        colon={false}
-        onFinish={handleSubmit}
-      >
-        <DockerNetworkName formName="networkName" />
+      <Form form={form} layout="vertical" colon={false} onFinish={handleSubmit}>
+        <DockerNetworkName formName="networkName" setStatus={setStatus} />
       </Form>
     </Modal>
   );
