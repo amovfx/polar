@@ -112,10 +112,6 @@ const NetworkView: React.FC<RouteComponentProps<MatchParams>> = ({ match }) => {
     });
   };
 
-  const externalizeClick = useAsyncCallback(async () => {
-    network && showDockerNetwork({ networkName: network.name });
-  });
-
   const handleBackClick = useCallback(() => {
     navigateTo(HOME);
     clearActiveId();
@@ -189,7 +185,7 @@ const NetworkView: React.FC<RouteComponentProps<MatchParams>> = ({ match }) => {
             }}
             onDeleteClick={() => showRemoveModal(network.id, network.name)}
             onExportClick={() => exportAsync.execute(network.id, network.name)}
-            onDockerNetworkClick={() => externalizeClick.execute()}
+            onDockerNetworkClick={() => showDockerNetwork({ networkName: network.name })}
           />
         }
       />

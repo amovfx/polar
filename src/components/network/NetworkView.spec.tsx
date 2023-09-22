@@ -66,6 +66,12 @@ describe('NetworkView Component', () => {
           1: initChartFromNetwork(network),
         },
       },
+      modals: {
+        dockerNetwork: {
+          visible: false,
+          networkName: 'test-external-docker-network',
+        },
+      },
       bitcoind: withBitcoinData ? bitcoinData : undefined,
     };
     const route = `/network/${id}`;
@@ -306,6 +312,19 @@ describe('NetworkView Component', () => {
         expect(store.getState().network.networks).toHaveLength(1);
         expect(store.getState().designer.allCharts[1]).toBeDefined();
       });
+    });
+  });
+  describe('docker network options', () => {
+    it('should show the docker options modal', async () => {
+      const { getByLabelText, getByText, findByText, store } = renderComponent('1');
+      expect(store.getState().modals.dockerNetwork.visible).toBe(false);
+      fireEvent.mouseOver(getByLabelText('more'));
+      fireEvent.click(await findByText('Docker Options'));
+      expect(store.getState().modals.dockerNetwork.visible).toBe(true);
+      expect(await findByText('Docker Network Options')).toBeInTheDocument();
+      expect(getByText('OK')).toBeInTheDocument();
+      expect(getByText('Cancel')).toBeInTheDocument();
+      fireEvent.click(await findByText('Cancel'));
     });
   });
 
