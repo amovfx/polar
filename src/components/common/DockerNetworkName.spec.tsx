@@ -32,7 +32,7 @@ describe('DockerNetworkName', () => {
 
   afterEach(() => unmount());
 
-  describe('When the modal renders', async () => {
+  describe('When the modal renders', () => {
     it('should display External Docker Network label', async () => {
       await renderComponent();
       const { getByText } = result;
@@ -46,7 +46,7 @@ describe('DockerNetworkName', () => {
     });
   });
 
-  describe('When the form item validates', async () => {
+  describe('When the form item validates', () => {
     it('should show help message for creating an external docker network', async () => {
       await renderComponent();
 
