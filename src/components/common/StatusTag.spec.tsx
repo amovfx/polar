@@ -1,12 +1,16 @@
 import React from 'react';
 import { Status } from 'shared/types';
-import { getNetwork, renderWithProviders } from 'utils/tests';
+import { getNetwork, injections, renderWithProviders } from 'utils/tests';
 import StatusTag from './StatusTag';
 
+const dockerServiceMock = injections.dockerService as jest.Mocked<
+  typeof injections.dockerService
+>;
+
 describe('StatusTag Component', () => {
-  const renderComponent = (status: Status) => {
+  const renderComponent = (status: Status, externalNetworkName: string) => {
     const network = getNetwork(0, 'test network', status);
-    network.externalNetworkName = 'test-external-network';
+    network.externalNetworkName = externalNetworkName;
     const initialState = {
       network: {
         networks: [network],
@@ -19,9 +23,28 @@ describe('StatusTag Component', () => {
     };
   };
 
-  it('should render the Error status', () => {
-    const docker_network_name = 'test-external-network';
-    const { getByText } = renderComponent(Status.Started);
-    expect(getByText(`External: ${docker_network_name}`)).toBeInTheDocument();
+  it('should render the Error status', async () => {
+    dockerServiceMock.getDockerExternalNetworks.mockResolvedValue([
+      'test-network-1',
+      'test-network-2',
+    ]);
+    const docker_network_name = 'test-network-1';
+
+    const { findByText } = renderComponent(Status.Started, docker_network_name);
+    const textElement = await findByText(`External: ${docker_network_name}`);
+    expect(textElement).toBeInTheDocument();
+  });
+  it('should render the Error status', async () => {
+    dockerServiceMock.getDockerExternalNetworks.mockResolvedValue([
+      'test-network-1',
+      'test-network-2',
+    ]);
+    const docker_network_name = 'test-network-3';
+
+    const { findByText } = renderComponent(Status.Started, docker_network_name);
+    const textElement = await findByText(
+      `External Docker Network: ${docker_network_name} does not exist`,
+    );
+    expect(textElement).toBeInTheDocument();
   });
 });

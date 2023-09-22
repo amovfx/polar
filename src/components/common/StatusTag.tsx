@@ -34,6 +34,14 @@ const StatusTag: React.FC<StatusTagProps> = ({ networkId }) => {
     })();
   }, [network?.externalNetworkName]);
 
+  const cmp =
+    network?.externalNetworkName &&
+    dockerNetworks.includes(network?.externalNetworkName) ? (
+      <Tag color="blue">{`External: ${network.externalNetworkName}`}</Tag>
+    ) : (
+      <Tag color="error">{`External Docker Network: ${network?.externalNetworkName} does not exist`}</Tag>
+    );
+
   return (
     <Row>
       {network && (
@@ -41,12 +49,7 @@ const StatusTag: React.FC<StatusTagProps> = ({ networkId }) => {
           {t(`enums.status.${Status[network.status]}`)}
         </Tag>
       )}
-      {network?.externalNetworkName &&
-      dockerNetworks.includes(network?.externalNetworkName) ? (
-        <Tag color="blue">{`External: ${network.externalNetworkName}`}</Tag>
-      ) : (
-        <Tag color="error">{`External Docker Network: ${network?.externalNetworkName} does not exist`}</Tag>
-      )}
+      {cmp}
     </Row>
   );
 };
