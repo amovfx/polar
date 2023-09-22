@@ -52,8 +52,8 @@ describe('DockerNetworkModal Component', () => {
       });
     });
 
-    describe('when OK is hit', async () => {
-      describe('when the input is blank or default', async () => {
+    describe('when OK is hit', () => {
+      describe('when the input is blank or default', () => {
         it('should display a message', async () => {
           const { getByText, queryByText, store } = await renderComponent(network);
           const btn = getByText('OK');
@@ -87,7 +87,7 @@ describe('DockerNetworkModal Component', () => {
         });
       });
 
-      describe('when the input matches an existing docker network', async () => {
+      describe('when the input matches an existing docker network', () => {
         beforeEach(() => {
           (
             injections.dockerService.getDockerExternalNetworks as jest.Mock
