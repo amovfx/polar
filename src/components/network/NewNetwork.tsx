@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAsyncCallback } from 'react-async-hook';
 import { info } from 'electron-log';
 import styled from '@emotion/styled';
@@ -48,6 +48,8 @@ const NewNetwork: React.SFC = () => {
   const { settings } = useStoreState(s => s.app);
   const { custom: customNodes } = settings.nodeImages;
 
+  const [isDockerNetworkNameValid, setIsDockerNetworkNameValid] = useState<boolean>(true);
+
   const createAsync = useAsyncCallback(async (values: any) => {
     try {
       values.customNodes = values.customNodes || {};
@@ -91,7 +93,10 @@ const NewNetwork: React.SFC = () => {
             >
               <Input placeholder={l('namePhldr')} />
             </Form.Item>
-            <DockerNetworkName formName="externalNetworkName" />
+            <DockerNetworkName
+              formName="externalNetworkName"
+              validateCallback={setIsDockerNetworkNameValid}
+            />
           </Col>
           {customNodes.length > 0 && (
             <>
@@ -152,7 +157,12 @@ const NewNetwork: React.SFC = () => {
             </Col>
           </Row>
           <Form.Item>
-            <Button type="primary" htmlType="submit" loading={createAsync.loading}>
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={createAsync.loading}
+              disabled={!isDockerNetworkNameValid}
+            >
               {l('btnCreate')}
             </Button>
           </Form.Item>

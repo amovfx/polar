@@ -2,6 +2,7 @@ import React from 'react';
 import { fireEvent, waitFor } from '@testing-library/react';
 import os from 'os';
 import { Status } from 'shared/types';
+import ComposeFile from 'lib/docker/composeFile';
 import { CustomImage } from 'types';
 import { initChartFromNetwork } from 'utils/chart';
 import {
@@ -53,8 +54,10 @@ describe('NewNetwork component', () => {
     const result = renderWithProviders(<NewNetwork />, { initialState });
     return {
       ...result,
+      network,
       createBtn: result.getAllByText('Create Network')[0].parentElement as Element,
       nameInput: result.getByLabelText('Network Name'),
+      externalNetworkInput: result.getByLabelText('External Docker Network'),
     };
   };
 
@@ -106,6 +109,11 @@ describe('NewNetwork component', () => {
     expect(getByText('Not supported on Windows yet.')).toBeInTheDocument();
   });
 
+  it('should contain a input field for an external docker network', () => {
+    const { externalNetworkInput } = renderComponent();
+    expect(externalNetworkInput).toHaveValue('');
+  });
+
   describe('with valid submission', () => {
     it('should navigate to home page', async () => {
       const { createBtn, nameInput, history } = renderComponent();
@@ -134,9 +142,94 @@ describe('NewNetwork component', () => {
       expect(await findByText('asdf')).toBeInTheDocument();
     });
 
-    it('should contain a input field for an external docker network', () => {
-      const { getByLabelText } = renderComponent();
-      expect(getByLabelText('External Docker Network')).toHaveValue('');
+    describe('with docker external network', () => {
+      beforeEach(() => {
+        mockDockerService.saveComposeFile.mockImplementation(async network => {
+          if (network.externalNetworkName !== undefined) {
+            const file = new ComposeFile(network.id);
+            file.setExternalNetworkName(network.externalNetworkName);
+            if (
+              !(
+                network.externalNetworkName === 'default' ||
+                network.externalNetworkName.length === 0
+              )
+            ) {
+              await mockDockerService.createDockerExternalNetwork(
+                network.externalNetworkName as string,
+              );
+            }
+          }
+        });
+      });
+
+      it('should create a docker external network', async () => {
+        const { createBtn, nameInput, injections, externalNetworkInput } =
+          renderComponent();
+
+        fireEvent.change(nameInput, { target: { value: 'test' } });
+        fireEvent.change(externalNetworkInput, { target: { value: 'test-external' } });
+        fireEvent.click(createBtn);
+
+        await waitFor(() => {
+          expect(injections.dockerService.saveComposeFile).toBeCalled();
+          expect(injections.dockerService.createDockerExternalNetwork).toBeCalled();
+        });
+      });
+      it('should not create a docker external network', async () => {
+        const { createBtn, nameInput, injections, externalNetworkInput } =
+          renderComponent();
+
+        fireEvent.change(nameInput, { target: { value: 'test' } });
+        fireEvent.change(externalNetworkInput, {
+          target: { value: 'default' },
+        });
+        fireEvent.click(createBtn);
+
+        await waitFor(() => {
+          expect(injections.dockerService.saveComposeFile).toBeCalled();
+          expect(injections.dockerService.createDockerExternalNetwork).not.toBeCalled();
+        });
+      });
+
+      it('should not create a docker external network', async () => {
+        const { createBtn, nameInput, injections, externalNetworkInput } =
+          renderComponent();
+
+        fireEvent.change(nameInput, { target: { value: 'test' } });
+        fireEvent.change(externalNetworkInput, {
+          target: { value: undefined },
+        });
+        fireEvent.click(createBtn);
+
+        await waitFor(() => {
+          expect(injections.dockerService.saveComposeFile).toBeCalled();
+          expect(injections.dockerService.createDockerExternalNetwork).not.toBeCalled();
+        });
+      });
+
+      it('should not create a docker external network', async () => {
+        const { createBtn, nameInput, injections, externalNetworkInput } =
+          renderComponent();
+
+        fireEvent.change(nameInput, { target: { value: 'test' } });
+        fireEvent.change(externalNetworkInput, {
+          target: { value: '' },
+        });
+        fireEvent.click(createBtn);
+
+        await waitFor(() => {
+          expect(injections.dockerService.saveComposeFile).toBeCalled();
+          expect(injections.dockerService.createDockerExternalNetwork).not.toBeCalled();
+        });
+      });
+      it('it should disable the create button if docker external network is invalid', async () => {
+        const { createBtn, externalNetworkInput } = renderComponent();
+        fireEvent.change(externalNetworkInput, { target: { value: '__' } });
+
+        await waitFor(() => {
+          expect(createBtn).toBeDisabled();
+        });
+      });
     });
   });
 });
