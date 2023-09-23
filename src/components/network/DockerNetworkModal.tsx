@@ -9,7 +9,6 @@ import DockerNetworkName from 'components/common/DockerNetworkName';
 interface Props {
   network: Network;
 }
-type Status = '' | 'warning' | 'error' | undefined;
 
 const DockerNetworkModal: React.FC<Props> = ({ network }) => {
   const { l } = usePrefixedTranslation('cmps.network.actions.DockerNetworkModal');
@@ -22,7 +21,7 @@ const DockerNetworkModal: React.FC<Props> = ({ network }) => {
   );
 
   const { notify } = useStoreActions(s => s.app);
-  const [status, setStatus] = useState<Status>(undefined);
+  const [isDockerNetworkNameValid, setIsDockerNetworkNameValid] = useState<boolean>(true);
 
   const setExternalDockerNetworkAsync = useAsyncCallback(
     async (id: number, externalNetworkName: string | undefined) => {
@@ -49,7 +48,6 @@ const DockerNetworkModal: React.FC<Props> = ({ network }) => {
           }
         }
         hideDockerNetwork();
-        setStatus(undefined);
       } catch (error: any) {
         notify({ message: l('submitError'), error });
       }
@@ -68,11 +66,14 @@ const DockerNetworkModal: React.FC<Props> = ({ network }) => {
       onCancel={() => hideDockerNetwork()}
       onOk={form.submit}
       okButtonProps={{
-        disabled: setExternalDockerNetworkAsync.loading || status === 'error',
+        disabled: setExternalDockerNetworkAsync.loading || !isDockerNetworkNameValid,
       }}
     >
       <Form form={form} layout="vertical" colon={false} onFinish={handleSubmit}>
-        <DockerNetworkName formName="networkName" setStatus={setStatus} />
+        <DockerNetworkName
+          formName="networkName"
+          validateCallback={setIsDockerNetworkNameValid}
+        />
       </Form>
     </Modal>
   );

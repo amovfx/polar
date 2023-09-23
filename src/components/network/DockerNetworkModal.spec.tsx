@@ -128,6 +128,18 @@ describe('DockerNetworkModal Component', () => {
           });
         });
       });
+      describe('when the input is invalid', () => {
+        it('should isabled the OK button', async () => {
+          const { getByText, getByLabelText } = await renderComponent(network);
+          const input = getByLabelText('External Docker Network');
+          fireEvent.change(input, { target: { value: '__' } });
+          await waitFor(() => {
+            const btn = getByText('OK');
+            expect(btn.parentElement).toBeInstanceOf(HTMLButtonElement);
+            expect(btn.parentElement).toBeDisabled();
+          });
+        });
+      });
       describe('when an error is thrown', () => {
         it('should display an error message', async () => {
           const network2 = getNetwork(1, 'test network 2', Status.Stopped);
