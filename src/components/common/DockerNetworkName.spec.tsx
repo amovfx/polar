@@ -1,5 +1,6 @@
 import React from 'react';
 import { act, fireEvent } from '@testing-library/react';
+import { Form } from 'antd';
 import { injections, renderWithProviders } from 'utils/tests';
 import DockerNetworkName from './DockerNetworkName';
 
@@ -11,12 +12,14 @@ const mockDockerService = injections.dockerService as jest.Mocked<
 describe('DockerNetworkName', () => {
   let unmount: () => void;
   let result: any;
-  const mockSetStatus = jest.fn();
+  const mockValidateCallback = jest.fn();
 
   const renderComponent = async () => {
     await act(async () => {
       result = renderWithProviders(
-        <DockerNetworkName formName="network" setStatus={mockSetStatus} />,
+        <Form>
+          <DockerNetworkName formName="network" validateCallback={mockValidateCallback} />
+        </Form>,
       );
       unmount = result.unmount;
       //return result;
@@ -56,7 +59,7 @@ describe('DockerNetworkName', () => {
       expect(
         await findByText('Docker External Network will be created'),
       ).toBeInTheDocument();
-      expect(mockSetStatus).toHaveBeenCalledWith('warning');
+      expect(mockValidateCallback).toHaveBeenCalledWith(true);
       const element = container.querySelector('.ant-select.ant-select-status-warning');
       expect(element).not.toBeNull();
     });
@@ -72,12 +75,12 @@ describe('DockerNetworkName', () => {
       expect(
         await findByText('Docker Network will be attached to test-network'),
       ).toBeInTheDocument();
-      expect(mockSetStatus).toHaveBeenCalledWith(undefined);
+      expect(mockValidateCallback).toHaveBeenCalledWith(true);
       fireEvent.change(input, { target: { value: 'test-network-2' } });
       expect(
         await findByText('Docker Network will be attached to test-network-2'),
       ).toBeInTheDocument();
-      expect(mockSetStatus).toHaveBeenCalledWith(undefined);
+      expect(mockValidateCallback).toHaveBeenCalledWith(true);
       const element = container.querySelector('.ant-select.ant-select-status-success');
       expect(element).not.toBeNull();
     });
@@ -89,7 +92,7 @@ describe('DockerNetworkName', () => {
       const input = getByLabelText('External Docker Network') as HTMLInputElement;
       fireEvent.change(input, { target: { value: '__' } });
       expect(await findByText('Invalid Docker Network Name')).toBeInTheDocument();
-      expect(mockSetStatus).toHaveBeenCalledWith('error');
+      expect(mockValidateCallback).toHaveBeenCalledWith(false);
       const element = container.querySelector('.ant-select.ant-select-status-error');
       expect(element).not.toBeNull();
     });
