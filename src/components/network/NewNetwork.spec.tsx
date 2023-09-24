@@ -1,4 +1,5 @@
 import React from 'react';
+import * as electron from 'electron';
 import { fireEvent, waitFor } from '@testing-library/react';
 import os from 'os';
 import { Status } from 'shared/types';
@@ -20,6 +21,19 @@ const mockOS = os as jest.Mocked<typeof os>;
 const mockDockerService = injections.dockerService as jest.Mocked<
   typeof injections.dockerService
 >;
+
+jest.mock('electron', () => ({
+  remote: {
+    dialog: {
+      showOpenDialog: jest.fn(),
+    },
+    app: {
+      getPath: jest.fn().mockReturnValue('/mocked/path'),
+    },
+  },
+}));
+
+const mockElectron = electron as jest.Mocked<typeof electron>;
 
 describe('NewNetwork component', () => {
   const customImages: CustomImage[] = [
@@ -146,7 +160,7 @@ describe('NewNetwork component', () => {
       beforeEach(() => {
         mockDockerService.saveComposeFile.mockImplementation(async network => {
           if (network.externalNetworkName !== undefined) {
-            const file = new ComposeFile(network.id);
+            const file = new ComposeFile(network);
             file.setExternalNetworkName(network.externalNetworkName);
             if (
               !(
@@ -246,6 +260,41 @@ describe('NewNetwork component', () => {
         await waitFor(() => {
           expect(createBtn).toBeDisabled();
         });
+      });
+    });
+  });
+
+  describe('selectDirectory', () => {
+    it('sets the form value when a directory is selected', async () => {
+      // Setup mock
+      (mockElectron.remote.dialog.showOpenDialog as jest.Mock).mockResolvedValueOnce({
+        canceled: false,
+        filePaths: ['path/to/dir'],
+      });
+
+      const { getByPlaceholderText, getByLabelText } = renderComponent();
+
+      // Click on the FolderOpenOutlined icon (you should add a data-testid to that icon)
+      fireEvent.click(getByLabelText('folder-open'));
+
+      await waitFor(() => {
+        // Now check that the form's input value has been set
+        const input = getByPlaceholderText('Select a directory') as HTMLInputElement;
+        expect(input.value).toBe('path/to/dir');
+      });
+    });
+
+    it('should not set externalNetworkPath when canceled', async () => {
+      const { getByPlaceholderText, getByLabelText } = renderComponent();
+      (mockElectron.remote.dialog.showOpenDialog as jest.Mock).mockResolvedValueOnce({
+        canceled: true,
+        filePaths: [],
+      });
+      fireEvent.click(getByLabelText('folder-open'));
+      await waitFor(() => {
+        // Now check that the form's input value has been set
+        const input = getByPlaceholderText('Select a directory') as HTMLInputElement;
+        expect(input.value).toBe('');
       });
     });
   });
