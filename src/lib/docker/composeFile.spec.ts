@@ -4,8 +4,8 @@ import { getNetwork } from 'utils/tests';
 import ComposeFile from './composeFile';
 
 describe('ComposeFile', () => {
-  let composeFile = new ComposeFile(1);
-  const network = getNetwork();
+  const network = getNetwork(1, 'testNetwork');
+  let composeFile = new ComposeFile(network);
   const btcNode = network.nodes.bitcoin[0];
   const lndNode = network.nodes.lightning[0] as LndNode;
   const clnNode = network.nodes.lightning[1] as CLightningNode;
@@ -16,7 +16,7 @@ describe('ComposeFile', () => {
   const tapLndNode = network.nodes.lightning[0] as LndNode;
 
   beforeEach(() => {
-    composeFile = new ComposeFile(1);
+    composeFile = new ComposeFile(network);
   });
 
   it('should have no services initially', () => {
@@ -28,7 +28,7 @@ describe('ComposeFile', () => {
   });
 
   it('should have a a name', () => {
-    expect(composeFile.content.name).toEqual('polar-network-1');
+    expect(composeFile.content.name).toEqual('polar-network-testNetwork-1');
   });
 
   it('should add multiple services', () => {
