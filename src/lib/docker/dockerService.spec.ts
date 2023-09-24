@@ -195,6 +195,7 @@ describe('DockerService', () => {
         managedImages: testManagedImages,
         customImages: [],
         externalNetworkName: undefined,
+        externalNetworkPath: undefined,
       });
       net.nodes.lightning[0].backendName = 'invalid';
       await dockerService.saveComposeFile(net);
@@ -262,6 +263,7 @@ describe('DockerService', () => {
         managedImages: testManagedImages,
         customImages: [],
         externalNetworkName: undefined,
+        externalNetworkPath: undefined,
       });
       net.nodes.lightning[0].backendName = 'invalid';
       await dockerService.saveComposeFile(net);
@@ -285,6 +287,7 @@ describe('DockerService', () => {
         managedImages: testManagedImages,
         customImages: [],
         externalNetworkName: undefined,
+        externalNetworkPath: undefined,
       });
       net.nodes.lightning[0].backendName = 'invalid';
       await dockerService.saveComposeFile(net);
@@ -344,6 +347,28 @@ describe('DockerService', () => {
         expect.stringContaining(`"name": "${network.name}"`),
       );
     });
+
+    it('should save a network with external path', () => {
+      const path = '/tmp/test';
+      const net = createNetwork({
+        id: 1,
+        name: 'my network',
+        lndNodes: 0,
+        clightningNodes: 0,
+        eclairNodes: 0,
+        bitcoindNodes: 1,
+        repoState: defaultRepoState,
+        managedImages: testManagedImages,
+        customImages: [],
+        externalNetworkName: undefined,
+        externalNetworkPath: path,
+      });
+      dockerService.saveNetworks({ version: '0.1.0', networks: [net], charts: {} });
+      expect(filesMock.write).toBeCalledWith(
+        expect.stringContaining(join('networks', 'networks.json')),
+        expect.stringContaining(`"name": "${net.name}"`),
+      );
+    });
   });
 
   describe('loading data', () => {
@@ -359,6 +384,7 @@ describe('DockerService', () => {
         managedImages: testManagedImages,
         customImages: [],
         externalNetworkName: undefined,
+        externalNetworkPath: undefined,
       });
       const chart = initChartFromNetwork(net);
       // return 'any' to suppress "The operand of a 'delete' operator must be optional.ts(2790)" error
@@ -487,6 +513,7 @@ describe('DockerService', () => {
         managedImages: testManagedImages,
         customImages: [],
         externalNetworkName: undefined,
+        externalNetworkPath: undefined,
       });
       const chart = initChartFromNetwork(net);
       const fileData: NetworksFile = {

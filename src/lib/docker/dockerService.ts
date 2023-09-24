@@ -122,7 +122,7 @@ class DockerService implements DockerLibrary {
    * @param network the network to save a compose file for
    */
   async saveComposeFile(network: Network) {
-    const file = new ComposeFile(network.id);
+    const file = new ComposeFile(network);
     if (network.externalNetworkName !== undefined) {
       file.setExternalNetworkName(network.externalNetworkName);
       if (
