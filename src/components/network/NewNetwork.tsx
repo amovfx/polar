@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useAsyncCallback } from 'react-async-hook';
+import { OpenDialogReturnValue, remote } from 'electron';
 import { info } from 'electron-log';
+import { FolderOpenOutlined } from '@ant-design/icons';
 import styled from '@emotion/styled';
 import {
   Button,
@@ -41,6 +43,8 @@ const Styled = {
 const NewNetwork: React.SFC = () => {
   useEffect(() => info('Rendering NewNetwork component'), []);
 
+  const [form] = Form.useForm();
+
   const { l } = usePrefixedTranslation('cmps.network.NewNetwork');
   const theme = useTheme();
   const { navigateTo, notify } = useStoreActions(s => s.app);
@@ -64,6 +68,18 @@ const NewNetwork: React.SFC = () => {
     return result;
   }, {} as Record<string, number>);
 
+  const selectDirectory = async () => {
+    const result: OpenDialogReturnValue = await remote.dialog.showOpenDialog({
+      properties: ['openDirectory'],
+    });
+
+    if (!result.canceled && result.filePaths.length > 0) {
+      form.setFieldsValue({ externalNetworkPath: result.filePaths[0] });
+    } else {
+      form.setFieldsValue({ externalNetworkPath: undefined });
+    }
+  };
+
   return (
     <>
       <Styled.PageHeader
@@ -82,8 +98,10 @@ const NewNetwork: React.SFC = () => {
             bitcoindNodes: 1,
             customNodes: initialCustomValues,
             externalNetworkName: '',
+            externalNetworkPath: undefined,
           }}
           onFinish={createAsync.execute}
+          form={form}
         >
           <Col>
             <Form.Item
@@ -93,10 +111,22 @@ const NewNetwork: React.SFC = () => {
             >
               <Input placeholder={l('namePhldr')} />
             </Form.Item>
-            <DockerNetworkName
-              formName="externalNetworkName"
-              validateCallback={setIsDockerNetworkNameValid}
-            />
+            <Row gutter={16}>
+              <Col span={12}>
+                <DockerNetworkName
+                  formName="externalNetworkName"
+                  validateCallback={setIsDockerNetworkNameValid}
+                />
+              </Col>
+              <Col span={12}>
+                <Form.Item name="externalNetworkPath" label="External Network Path">
+                  <Input
+                    suffix={<FolderOpenOutlined onClick={selectDirectory} />}
+                    placeholder="Select a directory"
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
           </Col>
           {customNodes.length > 0 && (
             <>
