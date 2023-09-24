@@ -6,6 +6,7 @@ import {
   LndNode,
   TapdNode,
 } from 'shared/types';
+import { Network } from 'types';
 import { bitcoinCredentials, dockerConfigs, eclairCredentials } from 'utils/constants';
 import { getContainerName, polarNetworkName } from 'utils/network';
 import { bitcoind, clightning, eclair, lnd, tapd } from './nodeTemplates';
@@ -43,10 +44,10 @@ export interface ComposeContent {
 class ComposeFile {
   content: ComposeContent;
 
-  constructor(id: number) {
+  constructor(network: Network) {
     this.content = {
       version: '3.3',
-      name: polarNetworkName(id),
+      name: polarNetworkName(network),
       services: {},
     };
   }
