@@ -366,6 +366,7 @@ export const createNetwork = (config: {
   managedImages: ManagedImage[];
   customImages: { image: CustomImage; count: number }[];
   externalNetworkName: string | undefined;
+  externalNetworkPath: string | undefined;
   status?: Status;
 }): Network => {
   const {
@@ -382,12 +383,16 @@ export const createNetwork = (config: {
   } = config;
   // need explicit undefined check because Status.Starting is 0
   const status = config.status !== undefined ? config.status : Status.Stopped;
+  const path =
+    config.externalNetworkPath !== undefined
+      ? join(config.externalNetworkPath, name)
+      : join(networksPath, id.toString());
 
   const network: Network = {
     id: id,
     name,
     status,
-    path: join(networksPath, id.toString()),
+    path: path,
     nodes: {
       bitcoin: [],
       lightning: [],
@@ -847,6 +852,6 @@ export const zipNetwork = async (
   // await zip(network.path, zipPath);
 };
 
-export const polarNetworkName = (id: number) => {
-  return `polar-network-${id}`;
+export const polarNetworkName = (network: Network) => {
+  return `polar-network-${network.name}-${network.id}`;
 };

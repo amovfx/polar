@@ -161,6 +161,7 @@ export const getNetwork = (
     managedImages: testManagedImages,
     customImages: [],
     externalNetworkName: undefined,
+    externalNetworkPath: undefined,
   };
   if (tapNodeCount > 0) {
     config.lndNodes = 0;

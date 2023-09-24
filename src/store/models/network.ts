@@ -46,6 +46,7 @@ interface AddNetworkArgs {
   bitcoindNodes: number;
   customNodes: Record<string, number>;
   externalNetworkName: string | undefined;
+  externalNetworkPath: string | undefined;
 }
 
 export interface AutoMinerModel {
@@ -260,6 +261,7 @@ const networkModel: NetworkModel = {
         bitcoindNodes,
         customNodes,
         externalNetworkName,
+        externalNetworkPath,
       },
       { dispatch, getState, injections, getStoreState, getStoreActions },
     ) => {
@@ -285,6 +287,7 @@ const networkModel: NetworkModel = {
         managedImages: computedManagedImages,
         customImages,
         externalNetworkName,
+        externalNetworkPath,
       });
       actions.add(network);
       const { networks } = getState();
