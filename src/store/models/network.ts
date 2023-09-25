@@ -13,7 +13,7 @@ import {
   TapdNode,
   TapNode,
 } from 'shared/types';
-import { AutoMineMode, CustomImage, Network, StoreInjections } from 'types';
+import { AutoMineMode, CustomImage, DockerSecret, Network, StoreInjections } from 'types';
 import { delay } from 'utils/async';
 import { initChartFromNetwork } from 'utils/chart';
 import { APP_VERSION, DOCKER_REPO } from 'utils/constants';
@@ -188,6 +188,7 @@ export interface NetworkModel {
   >;
   getExternalDockerNetworks: Thunk<NetworkModel, void, StoreInjections, RootModel>;
   setExternalNetworkName: Action<NetworkModel, { id: number; name: string | undefined }>;
+  createDockerSecrets: Thunk<NetworkModel, DockerSecret[], StoreInjections, RootModel>;
 }
 
 const networkModel: NetworkModel = {
@@ -956,6 +957,9 @@ const networkModel: NetworkModel = {
     const network = state.networks.find(n => n.id === id);
     if (!network) throw new Error(l('networkByIdErr', { networkId: id }));
     network.externalNetworkName = name;
+  }),
+  createDockerSecrets: thunk(async (_, secrets, { injections }) => {
+    await injections.dockerService.createDockerSecrets(secrets);
   }),
 };
 

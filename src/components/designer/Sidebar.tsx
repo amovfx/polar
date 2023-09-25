@@ -25,7 +25,7 @@ const Sidebar: React.FC<Props> = ({ network, chart }) => {
       } else if (node && node.type === 'lightning') {
         return <LightningDetails node={node as LightningNode} />;
       } else if (node && node.type === 'tap') {
-        return <TapDetails node={node as TapNode} />;
+        return <TapDetails node={node as TapNode} network={network} />;
       }
     } else if (type === 'link' && id) {
       const link = chart.links[id];

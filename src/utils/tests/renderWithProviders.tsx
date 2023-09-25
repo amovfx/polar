@@ -53,6 +53,7 @@ export const injections: StoreInjections = {
     loadNetworks: jest.fn(),
     createDockerExternalNetwork: jest.fn(),
     getDockerExternalNetworks: jest.fn(),
+    createDockerSecrets: jest.fn(),
   },
   repoService: {
     load: jest.fn(),

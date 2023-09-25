@@ -1,10 +1,11 @@
 import React, { ReactNode, useMemo, useState } from 'react';
 import { BookOutlined } from '@ant-design/icons';
 import styled from '@emotion/styled';
-import { Radio, Tooltip } from 'antd';
+import { Button, Form, Radio, Tooltip } from 'antd';
 import { usePrefixedTranslation } from 'hooks';
 import { Status, TapdNode, TapNode } from 'shared/types';
 import { useStoreActions } from 'store';
+import { DockerSecret, Network } from 'types';
 import CopyIcon from 'components/common/CopyIcon';
 import DetailsList, { DetailValues } from 'components/common/DetailsList';
 import { EncodedStrings, FilePaths } from 'components/designer/lightning/connect';
@@ -27,6 +28,9 @@ const Styled = {
     margin-left: 5px;
     color: #aaa;
   `,
+  Spacer: styled.div`
+    height: 48px;
+  `,
 };
 
 export interface ConnectionInfo {
@@ -41,24 +45,26 @@ export interface ConnectionInfo {
 
 interface Props {
   node: TapNode;
+  network: Network;
 }
 
-const ConnectTab: React.FC<Props> = ({ node }) => {
+const ConnectTab: React.FC<Props> = ({ node, network }) => {
   const { l } = usePrefixedTranslation('cmps.designer.tap.ConnectTab');
   const [authType, setAuthType] = useState<string>('paths');
   const { openInBrowser } = useStoreActions(s => s.app);
+  const { createDockerSecrets } = useStoreActions(s => s.network);
 
   const info = useMemo((): ConnectionInfo => {
     if (node.status === Status.Started) {
       if (node.implementation === 'tapd') {
-        const lnd = node as TapdNode;
+        const tap = node as TapdNode;
         return {
-          restUrl: `https://127.0.0.1:${lnd.ports.rest}`,
-          grpcUrl: `127.0.0.1:${lnd.ports.grpc}`,
+          restUrl: `https://127.0.0.1:${tap.ports.rest}`,
+          grpcUrl: `127.0.0.1:${tap.ports.grpc}`,
           apiDocsUrl: 'https://lightning.engineering/api-docs/api/tap/',
           credentials: {
-            admin: lnd.paths.adminMacaroon,
-            cert: lnd.paths.tlsCert,
+            admin: tap.paths.adminMacaroon,
+            cert: tap.paths.tlsCert,
           },
         };
       }
@@ -106,6 +112,16 @@ const ConnectTab: React.FC<Props> = ({ node }) => {
     base64: <EncodedStrings credentials={credentials} encoding="base64" />,
   };
 
+  const handleCreateDockerSecrets = () => {
+    const adminName = `${network.name}-${node.name}-admin` as string;
+    const certName = `${network.name}-${node.name}-cert` as string;
+    const secrets: DockerSecret[] = [
+      { name: adminName, data: credentials.admin as string },
+      { name: certName, data: credentials.cert as string },
+    ];
+    createDockerSecrets(secrets);
+  };
+
   return (
     <>
       <DetailsList details={hosts} />
@@ -128,6 +144,14 @@ const ConnectTab: React.FC<Props> = ({ node }) => {
         ]}
       </Styled.RadioGroup>
       {authCmps[authType]}
+      <Styled.Spacer />
+      <Form labelCol={{ span: 24 }}>
+        <Form.Item label={l('title')} colon={false}>
+          <Button onClick={handleCreateDockerSecrets} block>
+            Export Docker Secretsss
+          </Button>
+        </Form.Item>
+      </Form>
     </>
   );
 };

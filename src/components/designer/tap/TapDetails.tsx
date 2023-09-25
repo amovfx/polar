@@ -5,6 +5,7 @@ import { Alert } from 'antd';
 import { usePrefixedTranslation } from 'hooks';
 import { Status, TapNode } from 'shared/types';
 import { useStoreActions, useStoreState } from 'store';
+import { Network } from 'types';
 import { Loader } from 'components/common';
 import SidebarCard from '../SidebarCard';
 import ActionsTab from './ActionsTab';
@@ -13,9 +14,10 @@ import InfoTab from './InfoTab';
 
 interface Props {
   node: TapNode;
+  network: Network;
 }
 
-const TapDetails: React.FC<Props> = ({ node }) => {
+const TapDetails: React.FC<Props> = ({ node, network }) => {
   const { l } = usePrefixedTranslation('cmps.designer.tap.TapDetails');
   const [activeTab, setActiveTab] = useState('info');
   const { getAssets, getBalances } = useStoreActions(s => s.tap);
@@ -44,7 +46,7 @@ const TapDetails: React.FC<Props> = ({ node }) => {
   ];
   const tabContents: Record<string, ReactNode> = {
     info: <InfoTab node={node} />,
-    connect: <ConnectTab node={node} />,
+    connect: <ConnectTab node={node} network={network} />,
     actions: <ActionsTab node={node} />,
   };
   return (

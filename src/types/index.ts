@@ -107,6 +107,11 @@ export interface DockerRepoUpdates {
   updates?: Record<NodeImplementation, string[]>;
 }
 
+export interface DockerSecret {
+  name: string;
+  data: string;
+}
+
 export interface DockerLibrary {
   getVersions: (throwOnError?: boolean) => Promise<DockerVersions>;
   getImages: () => Promise<string[]>;
@@ -120,6 +125,7 @@ export interface DockerLibrary {
   loadNetworks: () => Promise<NetworksFile>;
   createDockerExternalNetwork: (name: string) => Promise<void>;
   getDockerExternalNetworks: () => Promise<string[]>;
+  createDockerSecrets: (secrets: DockerSecret[]) => Promise<void>;
 }
 
 export interface RepoServiceInjection {

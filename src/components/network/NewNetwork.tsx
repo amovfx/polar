@@ -7,6 +7,7 @@ import styled from '@emotion/styled';
 import {
   Button,
   Card,
+  Checkbox,
   Col,
   Divider,
   Form,
@@ -37,6 +38,11 @@ const Styled = {
       font-size: 14px;
       opacity: 0.5;
     }
+  `,
+  Col: styled(Col)`
+    display: flex;
+    flex: 1;
+    align-items: flex-end;
   `,
 };
 
@@ -112,13 +118,13 @@ const NewNetwork: React.SFC = () => {
               <Input placeholder={l('namePhldr')} />
             </Form.Item>
             <Row gutter={16}>
-              <Col span={12}>
+              <Col span={8}>
                 <DockerNetworkName
                   formName="externalNetworkName"
                   validateCallback={setIsDockerNetworkNameValid}
                 />
               </Col>
-              <Col span={12}>
+              <Col span={8}>
                 <Form.Item name="externalNetworkPath" label="External Network Path">
                   <Input
                     suffix={<FolderOpenOutlined onClick={selectDirectory} />}
@@ -126,6 +132,11 @@ const NewNetwork: React.SFC = () => {
                   />
                 </Form.Item>
               </Col>
+              <Styled.Col span={8}>
+                <Form.Item name="exportDockerSecrets">
+                  <Checkbox>Export Docker Secrets</Checkbox>
+                </Form.Item>
+              </Styled.Col>
             </Row>
           </Col>
           {customNodes.length > 0 && (

@@ -16,7 +16,13 @@ import {
   TapdNode,
 } from 'shared/types';
 import stripAnsi from 'strip-ansi';
-import { DockerLibrary, DockerVersions, Network, NetworksFile } from 'types';
+import {
+  DockerLibrary,
+  DockerSecret,
+  DockerVersions,
+  Network,
+  NetworksFile,
+} from 'types';
 import { legacyDataPath, networksPath, nodePath } from 'utils/config';
 import { APP_VERSION, dockerConfigs } from 'utils/constants';
 import { exists, read, write } from 'utils/files';
@@ -204,6 +210,22 @@ class DockerService implements DockerLibrary {
     const dockerInst = await getDocker();
     const dockerNetworks = await dockerInst?.listNetworks();
     return dockerNetworks.map(n => n.Name);
+  }
+
+  async createDockerSecrets(secrets: DockerSecret[]): Promise<void> {
+    const dockerInst = await getDocker();
+
+    if (!dockerInst) {
+      throw new Error('Docker instance could not be created');
+    }
+    info(`Creating docker secrets: ${secrets}`);
+    secrets.forEach(async secret => {
+      const secretData = Buffer.from(secret.data).toString('base64');
+      await dockerInst.createSecret({
+        Name: secret.name,
+        Data: secretData,
+      });
+    });
   }
 
   /**
