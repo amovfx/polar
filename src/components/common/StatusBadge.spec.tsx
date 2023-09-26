@@ -1,55 +1,39 @@
 import React from 'react';
 import { Status } from 'shared/types';
 import { renderWithProviders } from 'utils/tests';
-import StatusBadge from './StatusBadge';
+import StatusTag from './StatusTag';
 
 describe('StatusTag Component', () => {
-  const renderComponent = (status: Status, text?: string) => {
-    return renderWithProviders(<StatusBadge status={status} text={text} />);
+  const renderComponent = (status: Status) => {
+    const result = renderWithProviders(<StatusTag status={status} />);
+    return {
+      ...result,
+      dot: result.container.querySelector('.ant-tag'),
+    };
   };
 
   it('should render the Starting status', () => {
-    const { container } = renderComponent(Status.Starting);
-    const element = container.querySelector(
-      '.ant-badge-status-dot.ant-badge-status-processing',
-    );
-
-    expect(element).not.toBeNull();
+    const { dot } = renderComponent(Status.Starting);
+    expect(dot).toHaveClass('ant-tag-blue');
   });
 
   it('should render the Started status', () => {
-    const { container } = renderComponent(Status.Started);
-    const element = container.querySelector(
-      '.ant-badge-status-dot.ant-badge-status-success',
-    );
-
-    expect(element).not.toBeNull();
+    const { dot } = renderComponent(Status.Started);
+    expect(dot).toHaveClass('ant-tag-green');
   });
 
   it('should render the Stopping status', () => {
-    const { container } = renderComponent(Status.Stopping);
-    const element = container.querySelector(
-      '.ant-badge-status-dot.ant-badge-status-processing',
-    );
-
-    expect(element).not.toBeNull();
+    const { dot } = renderComponent(Status.Stopping);
+    expect(dot).toHaveClass('ant-tag-blue');
   });
 
   it('should render the Stopped status', () => {
-    const { container } = renderComponent(Status.Stopped);
-    const element = container.querySelector(
-      '.ant-badge-status-dot.ant-badge-status-default',
-    );
-
-    expect(element).not.toBeNull();
+    const { dot } = renderComponent(Status.Stopped);
+    expect(dot).toHaveClass('ant-tag-red');
   });
 
   it('should render the Error status', () => {
-    const { container } = renderComponent(Status.Error);
-    const element = container.querySelector(
-      '.ant-badge-status-dot.ant-badge-status-error',
-    );
-
-    expect(element).not.toBeNull();
+    const { dot } = renderComponent(Status.Error);
+    expect(dot).toHaveClass('ant-tag-red');
   });
 });

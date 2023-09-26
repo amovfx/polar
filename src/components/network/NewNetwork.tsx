@@ -6,7 +6,6 @@ import {
   Button,
   Card,
   Col,
-  Collapse,
   Divider,
   Form,
   Input,
@@ -20,8 +19,8 @@ import { useStoreActions, useStoreState } from 'store';
 import { ThemeColors } from 'theme/colors';
 import { dockerConfigs } from 'utils/constants';
 import { isWindows } from 'utils/system';
-import DockerNetworkName from 'components/common/DockerNetworkName';
 import { HOME } from 'components/routing';
+import NewNetworkOptions from './NewNetworkOptions';
 
 const Styled = {
   PageHeader: styled(PageHeader)<{ colors: ThemeColors['pageHeader'] }>`
@@ -94,14 +93,9 @@ const NewNetwork: React.SFC = () => {
             >
               <Input placeholder={l('namePhldr')} />
             </Form.Item>
-            <Collapse defaultActiveKey={['0']} ghost>
-              <Collapse.Panel header="Advanced Options" key="1">
-                <DockerNetworkName
-                  name="externalNetworkName"
-                  validateCallback={setIsDockerNetworkNameValid}
-                />
-              </Collapse.Panel>
-            </Collapse>
+            <NewNetworkOptions
+              setIsDockerNetworkNameValid={setIsDockerNetworkNameValid}
+            />
           </Col>
           {customNodes.length > 0 && (
             <>

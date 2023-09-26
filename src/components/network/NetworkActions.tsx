@@ -107,11 +107,11 @@ const NetworkActions: React.FC<Props> = ({
       case 'export':
         onExportClick();
         break;
-      case 'delete':
-        onDeleteClick();
-        break;
       case 'docker':
         onDockerNetworkClick();
+        break;
+      case 'delete':
+        onDeleteClick();
         break;
     }
   }, []);
@@ -119,8 +119,8 @@ const NetworkActions: React.FC<Props> = ({
   const items: MenuProps['items'] = [
     { key: 'rename', label: l('menuRename'), icon: <FormOutlined /> },
     { key: 'export', label: l('menuExport'), icon: <ExportOutlined /> },
-    { key: 'delete', label: l('menuDelete'), icon: <CloseOutlined /> },
     { key: 'docker', label: l('menuDocker'), icon: <LinkOutlined /> },
+    { key: 'delete', label: l('menuDelete'), icon: <CloseOutlined /> },
   ];
 
   return (

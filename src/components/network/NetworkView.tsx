@@ -174,7 +174,7 @@ const NetworkView: React.FC<RouteComponentProps<MatchParams>> = ({ match }) => {
         colors={theme.pageHeader}
         title={network.name}
         onBack={handleBackClick}
-        tags={<StatusTag networkId={networkId} />}
+        tags={<StatusTag status={network.status} />}
         extra={
           <NetworkActions
             network={network}
@@ -195,6 +195,10 @@ const NetworkView: React.FC<RouteComponentProps<MatchParams>> = ({ match }) => {
   const showNotice =
     [Status.Stopped, Status.Starting].includes(network.status) &&
     missingImages.length > 0;
+  const externalNetworkNotice =
+    [Status.Stopped, Status.Starting].includes(network.status) &&
+    network.externalNetworkName &&
+    network.externalNetworkName !== 'default';
 
   return (
     <Styled.NetworkView>
@@ -204,6 +208,14 @@ const NetworkView: React.FC<RouteComponentProps<MatchParams>> = ({ match }) => {
           type="info"
           message={l('missingImages')}
           description={missingImages.join(', ')}
+          showIcon
+        />
+      )}
+      {externalNetworkNotice && (
+        <Alert
+          type="info"
+          message={l('externalNetwork')}
+          description={network.externalNetworkName}
           showIcon
         />
       )}

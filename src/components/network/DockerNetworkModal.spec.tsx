@@ -111,6 +111,15 @@ describe('DockerNetworkModal Component', () => {
           });
         });
 
+        it('should populate the existing external docker network value', async () => {
+          const network2 = getNetwork(1, 'test network 2', Status.Stopped);
+          network2.externalNetworkName = 'external_docker_network_99';
+          const { getByDisplayValue } = await renderComponent(network2);
+          await waitFor(() => {
+            expect(getByDisplayValue('external_docker_network_99')).toBeInTheDocument();
+          });
+        });
+
         it('should display a creating message', async () => {
           const { getByText, queryByText, getByLabelText, store } = await renderComponent(
             network,

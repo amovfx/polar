@@ -69,7 +69,15 @@ const DockerNetworkModal: React.FC<Props> = ({ network }) => {
         disabled: setExternalDockerNetworkAsync.loading || !isDockerNetworkNameValid,
       }}
     >
-      <Form form={form} layout="vertical" colon={false} onFinish={handleSubmit}>
+      <Form
+        form={form}
+        layout="vertical"
+        colon={false}
+        onFinish={handleSubmit}
+        initialValues={{
+          networkName: network.externalNetworkName,
+        }}
+      >
         <DockerNetworkName
           name="networkName"
           validateCallback={setIsDockerNetworkNameValid}

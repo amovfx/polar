@@ -7,10 +7,11 @@ type Status = '' | 'warning' | 'error' | undefined;
 
 interface Props {
   name: string;
+  defaultValue?: string;
   validateCallback?: (value: boolean) => void;
 }
 
-const DockerNetworkName: React.FC<Props> = ({ name, validateCallback }) => {
+const DockerNetworkName: React.FC<Props> = ({ name, defaultValue, validateCallback }) => {
   const { l } = usePrefixedTranslation('cmps.common.form.DockerNetworkName');
 
   const { getExternalDockerNetworks } = useStoreActions(s => s.network);
@@ -67,6 +68,7 @@ const DockerNetworkName: React.FC<Props> = ({ name, validateCallback }) => {
         }
         onChange={validateNetworkName}
         status={status}
+        defaultValue={defaultValue}
       />
     </Form.Item>
   );

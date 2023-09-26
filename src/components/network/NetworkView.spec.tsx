@@ -36,9 +36,11 @@ describe('NetworkView Component', () => {
     id: string | undefined,
     status?: Status,
     images?: string[],
+    externalNetworkName?: string,
     withBitcoinData = true,
   ) => {
     const network = getNetwork(1, 'test network', status);
+    externalNetworkName ? (network.externalNetworkName = externalNetworkName) : null;
     const bitcoinData = {
       nodes: {
         '1-backend1': {
@@ -200,6 +202,16 @@ describe('NetworkView Component', () => {
     });
   });
 
+  describe('external network', () => {
+    it('should display a message if their is a docker external network', async () => {
+      const msg = 'This network operates on an external docker network';
+      const networkName = 'external_docker_network_99';
+      const { getByText } = renderComponent('1', Status.Stopped, [], networkName);
+      expect(getByText(msg)).toBeInTheDocument();
+      expect(getByText(networkName)).toBeInTheDocument();
+    });
+  });
+
   describe('node state', () => {
     beforeEach(() => {
       bitcoindServiceMock.getBlockchainInfo.mockResolvedValue({
@@ -213,14 +225,14 @@ describe('NetworkView Component', () => {
     });
 
     it('should fetch bitcoin data when mounted', async () => {
-      const { findByText } = renderComponent('1', Status.Started, [], false);
+      const { findByText } = renderComponent('1', Status.Started, [], undefined, false);
       // wait for the new chain height to be displayed on mount
       expect(await findByText('height: 321')).toBeInTheDocument();
     });
 
     it('should handle an error when fetching bitcoin data on mount', async () => {
       bitcoindServiceMock.getBlockchainInfo.mockRejectedValue(new Error('test-err'));
-      const { findByText } = renderComponent('1', Status.Started, [], false);
+      const { findByText } = renderComponent('1', Status.Started, [], undefined, false);
       expect(
         await findByText('Failed to fetch the bitcoin block height'),
       ).toBeInTheDocument();
@@ -228,7 +240,7 @@ describe('NetworkView Component', () => {
     });
 
     it('should not fetch bitcoin data if it is already in the store', async () => {
-      renderComponent('1', Status.Started, [], true);
+      renderComponent('1', Status.Started, [], undefined, true);
       expect(bitcoindServiceMock.getBlockchainInfo).not.toHaveBeenCalled();
     });
   });

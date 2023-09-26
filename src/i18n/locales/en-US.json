@@ -428,6 +428,7 @@
   "cmps.network.NetworkView.exportError": "Unable to export the network",
   "cmps.network.NetworkView.exportSuccess": "Exported '{{name}}'",
   "cmps.network.NetworkView.exportSuccessDesc": "Saved to {{destination}}",
+  "cmps.network.NetworkView.externalNetwork": "This network operates on an external docker network",
   "cmps.network.ImportNetwork.title": "Import a Lightning Network",
   "cmps.network.ImportNetwork.fileDraggerArea": "Drag a zip file exported from Polar here, or click to browse for the file",
   "cmps.network.ImportNetwork.importSuccess": "Imported network '{{name}}' successfully",

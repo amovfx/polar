@@ -57,7 +57,7 @@ describe('NewNetwork component', () => {
       network,
       createBtn: result.getAllByText('Create Network')[0].parentElement as Element,
       nameInput: result.getByLabelText('Network Name'),
-      externalNetworkInput: result.getByLabelText('External Docker Network'),
+      advancedOptions: result.getByText('Advanced Options'),
     };
   };
 
@@ -110,8 +110,8 @@ describe('NewNetwork component', () => {
   });
 
   it('should contain a input field for an external docker network', () => {
-    const { externalNetworkInput } = renderComponent();
-    expect(externalNetworkInput).toHaveValue('');
+    const { advancedOptions } = renderComponent();
+    expect(advancedOptions).toBeInTheDocument();
   });
 
   describe('with valid submission', () => {
@@ -163,8 +163,11 @@ describe('NewNetwork component', () => {
       });
 
       it('should create a docker external network', async () => {
-        const { createBtn, nameInput, injections, externalNetworkInput } =
+        const { createBtn, nameInput, injections, advancedOptions, getByLabelText } =
           renderComponent();
+
+        fireEvent.click(advancedOptions);
+        const externalNetworkInput = getByLabelText('External Docker Network');
 
         fireEvent.change(nameInput, { target: { value: 'test' } });
         fireEvent.change(externalNetworkInput, { target: { value: 'test-external' } });
@@ -175,9 +178,13 @@ describe('NewNetwork component', () => {
           expect(injections.dockerService.createDockerExternalNetwork).toBeCalled();
         });
       });
+
       it('should not create a docker external network', async () => {
-        const { createBtn, nameInput, injections, externalNetworkInput } =
+        const { createBtn, nameInput, injections, advancedOptions, getByLabelText } =
           renderComponent();
+
+        fireEvent.click(advancedOptions);
+        const externalNetworkInput = getByLabelText('External Docker Network');
 
         fireEvent.change(nameInput, { target: { value: 'test' } });
         fireEvent.change(externalNetworkInput, {
@@ -192,8 +199,11 @@ describe('NewNetwork component', () => {
       });
 
       it('should not create a docker external network', async () => {
-        const { createBtn, nameInput, injections, externalNetworkInput } =
+        const { createBtn, nameInput, injections, advancedOptions, getByLabelText } =
           renderComponent();
+
+        fireEvent.click(advancedOptions);
+        const externalNetworkInput = getByLabelText('External Docker Network');
 
         fireEvent.change(nameInput, { target: { value: 'test' } });
         fireEvent.change(externalNetworkInput, {
@@ -208,8 +218,11 @@ describe('NewNetwork component', () => {
       });
 
       it('should not create a docker external network', async () => {
-        const { createBtn, nameInput, injections, externalNetworkInput } =
+        const { createBtn, nameInput, injections, advancedOptions, getByLabelText } =
           renderComponent();
+
+        fireEvent.click(advancedOptions);
+        const externalNetworkInput = getByLabelText('External Docker Network');
 
         fireEvent.change(nameInput, { target: { value: 'test' } });
         fireEvent.change(externalNetworkInput, {
@@ -222,8 +235,12 @@ describe('NewNetwork component', () => {
           expect(injections.dockerService.createDockerExternalNetwork).not.toBeCalled();
         });
       });
+
       it('it should disable the create button if docker external network is invalid', async () => {
-        const { createBtn, externalNetworkInput } = renderComponent();
+        const { createBtn, advancedOptions, getByLabelText } = renderComponent();
+
+        fireEvent.click(advancedOptions);
+        const externalNetworkInput = getByLabelText('External Docker Network');
         fireEvent.change(externalNetworkInput, { target: { value: '__' } });
 
         await waitFor(() => {

@@ -1,50 +1,44 @@
 import React from 'react';
+import { render } from '@testing-library/react';
 import { Status } from 'shared/types';
-import { getNetwork, injections, renderWithProviders } from 'utils/tests';
-import StatusTag from './StatusTag';
-
-const dockerServiceMock = injections.dockerService as jest.Mocked<
-  typeof injections.dockerService
->;
+import StatusBadge from './StatusBadge';
 
 describe('StatusTag Component', () => {
-  const renderComponent = (status: Status, externalNetworkName: string) => {
-    const network = getNetwork(0, 'test network', status);
-    network.externalNetworkName = externalNetworkName;
-    const initialState = {
-      network: {
-        networks: [network],
-      },
-    };
-    const result = renderWithProviders(<StatusTag networkId={0} />, { initialState });
+  const renderComponent = (status: Status, text?: string) => {
+    const result = render(<StatusBadge status={status} text={text} />);
     return {
       ...result,
       dot: result.container.querySelector('.ant-badge span:first-child'),
     };
   };
 
-  it('should render the Error status', async () => {
-    dockerServiceMock.getDockerExternalNetworks.mockResolvedValue([
-      'test-network-1',
-      'test-network-2',
-    ]);
-    const docker_network_name = 'test-network-1';
-
-    const { findByText } = renderComponent(Status.Started, docker_network_name);
-    const textElement = await findByText(`External: ${docker_network_name}`);
-    expect(textElement).toBeInTheDocument();
+  it('should render the text', () => {
+    const { getByText } = renderComponent(Status.Starting, 'test text');
+    expect(getByText('test text')).toBeInTheDocument();
   });
-  it('should render the Error status', async () => {
-    dockerServiceMock.getDockerExternalNetworks.mockResolvedValue([
-      'test-network-1',
-      'test-network-2',
-    ]);
-    const docker_network_name = 'test-network-3';
 
-    const { findByText } = renderComponent(Status.Started, docker_network_name);
-    const textElement = await findByText(
-      `External Docker Network: ${docker_network_name} does not exist`,
-    );
-    expect(textElement).toBeInTheDocument();
+  it('should render the Starting status', () => {
+    const { dot } = renderComponent(Status.Starting);
+    expect(dot).toHaveClass('ant-badge-status-processing');
+  });
+
+  it('should render the Started status', () => {
+    const { dot } = renderComponent(Status.Started);
+    expect(dot).toHaveClass('ant-badge-status-success');
+  });
+
+  it('should render the Stopping status', () => {
+    const { dot } = renderComponent(Status.Stopping);
+    expect(dot).toHaveClass('ant-badge-status-processing');
+  });
+
+  it('should render the Stopped status', () => {
+    const { dot } = renderComponent(Status.Stopped);
+    expect(dot).toHaveClass('ant-badge-status-default');
+  });
+
+  it('should render the Error status', () => {
+    const { dot } = renderComponent(Status.Error);
+    expect(dot).toHaveClass('ant-badge-status-error');
   });
 });
