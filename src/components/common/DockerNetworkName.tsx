@@ -6,11 +6,11 @@ import { useStoreActions } from 'store';
 type Status = '' | 'warning' | 'error' | undefined;
 
 interface Props {
-  formName: string;
+  name: string;
   validateCallback?: (value: boolean) => void;
 }
 
-const DockerNetworkName: React.FC<Props> = ({ formName, validateCallback }) => {
+const DockerNetworkName: React.FC<Props> = ({ name, validateCallback }) => {
   const { l } = usePrefixedTranslation('cmps.common.form.DockerNetworkName');
 
   const { getExternalDockerNetworks } = useStoreActions(s => s.network);
@@ -56,7 +56,7 @@ const DockerNetworkName: React.FC<Props> = ({ formName, validateCallback }) => {
   };
 
   return (
-    <Form.Item name={formName} label={l('label')} help={help}>
+    <Form.Item name={name} label={l('label')} help={help}>
       <AutoComplete
         options={dockerNetworks?.map(network => ({
           value: network,

@@ -6,6 +6,7 @@ import {
   Button,
   Card,
   Col,
+  Collapse,
   Divider,
   Form,
   Input,
@@ -93,10 +94,14 @@ const NewNetwork: React.SFC = () => {
             >
               <Input placeholder={l('namePhldr')} />
             </Form.Item>
-            <DockerNetworkName
-              formName="externalNetworkName"
-              validateCallback={setIsDockerNetworkNameValid}
-            />
+            <Collapse defaultActiveKey={['0']} ghost>
+              <Collapse.Panel header="Advanced Options" key="1">
+                <DockerNetworkName
+                  name="externalNetworkName"
+                  validateCallback={setIsDockerNetworkNameValid}
+                />
+              </Collapse.Panel>
+            </Collapse>
           </Col>
           {customNodes.length > 0 && (
             <>

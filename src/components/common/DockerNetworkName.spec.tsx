@@ -18,7 +18,7 @@ describe('DockerNetworkName', () => {
     await act(async () => {
       result = renderWithProviders(
         <Form>
-          <DockerNetworkName formName="network" validateCallback={mockValidateCallback} />
+          <DockerNetworkName name="network" validateCallback={mockValidateCallback} />
         </Form>,
       );
       unmount = result.unmount;

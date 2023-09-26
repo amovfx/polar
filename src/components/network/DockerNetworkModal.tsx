@@ -71,7 +71,7 @@ const DockerNetworkModal: React.FC<Props> = ({ network }) => {
     >
       <Form form={form} layout="vertical" colon={false} onFinish={handleSubmit}>
         <DockerNetworkName
-          formName="networkName"
+          name="networkName"
           validateCallback={setIsDockerNetworkNameValid}
         />
       </Form>
