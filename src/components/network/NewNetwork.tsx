@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useAsyncCallback } from 'react-async-hook';
-import { OpenDialogReturnValue, remote } from 'electron';
 import { info } from 'electron-log';
 import styled from '@emotion/styled';
 import {
@@ -67,18 +66,6 @@ const NewNetwork: React.SFC = () => {
     return result;
   }, {} as Record<string, number>);
 
-  const selectDirectory = async () => {
-    const result: OpenDialogReturnValue = await remote.dialog.showOpenDialog({
-      properties: ['openDirectory'],
-    });
-
-    if (!result.canceled && result.filePaths.length > 0) {
-      form.setFieldsValue({ externalNetworkPath: result.filePaths[0] });
-    } else {
-      form.setFieldsValue({ externalNetworkPath: undefined });
-    }
-  };
-
   return (
     <>
       <Styled.PageHeader
@@ -111,6 +98,7 @@ const NewNetwork: React.SFC = () => {
               <Input placeholder={l('namePhldr')} />
             </Form.Item>
             <NewNetworkOptions
+              form={form}
               setIsDockerNetworkNameValid={setIsDockerNetworkNameValid}
             />
           </Col>

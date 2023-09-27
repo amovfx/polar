@@ -1,14 +1,15 @@
 import React from 'react';
 import { OpenDialogReturnValue, remote } from 'electron';
 import { FolderOpenOutlined } from '@ant-design/icons';
-import { Col, Collapse, Form, Input, Row } from 'antd';
+import { Col, Collapse, Form, FormInstance, Input, Row } from 'antd';
 import DockerNetworkName from 'components/common/DockerNetworkName';
 
 interface Props {
   setIsDockerNetworkNameValid: (value: boolean) => void;
+  form: FormInstance;
 }
 
-const NewNetworkOptions: React.FC<Props> = ({ setIsDockerNetworkNameValid }) => {
+const NewNetworkOptions: React.FC<Props> = ({ setIsDockerNetworkNameValid, form }) => {
   const selectDirectory = async () => {
     const result: OpenDialogReturnValue = await remote.dialog.showOpenDialog({
       properties: ['openDirectory'],
